@@ -51,9 +51,9 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; border-radius: 0; }
-html { scrollbar-gutter: stable; scroll-padding-top: var(--header); -webkit-text-size-adjust: 100%; }
+html { scrollbar-gutter: stable; scroll-padding-top: var(--header); overscroll-behavior: none; -webkit-text-size-adjust: 100%; }
 body {
-  margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+  margin: 0; padding-top: var(--header); min-height: 100vh; display: flex; flex-direction: column;
   background: var(--bg); color: var(--fg);
   font-family: var(--font); font-size: 16px; line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -70,8 +70,8 @@ ul { list-style: none; }
 
 .container { width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 var(--gutter); }
 
-/* header: sticky, opaque, content scrolls underneath it */
-.header { position: sticky; top: 0; z-index: 20; height: var(--header); background: var(--bg); border-bottom: 1px solid var(--line); box-sizing: border-box; transition: border-color .3s var(--ease), background-color .3s var(--ease); }
+/* header: fixed to the viewport, opaque, content scrolls underneath it. It cannot move. */
+.header { position: fixed; top: 0; left: 0; right: 0; z-index: 20; height: var(--header); background: var(--bg); border-bottom: 1px solid var(--line); box-sizing: border-box; transition: border-color .3s var(--ease), background-color .3s var(--ease); }
 .header .container { height: 100%; display: flex; justify-content: space-between; align-items: flex-start; }
 .brand { display: flex; align-items: flex-start; gap: 18px; min-width: 0; }
 .logo { display: block; color: var(--fg); line-height: 1; margin-top: var(--logo-top); }
