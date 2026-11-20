@@ -1,0 +1,61 @@
+---
+import "../styles/global.css"
+import { site } from "../data/site"
+
+interface Props { title?: string; description?: string }
+const { title, description = site.tagline } = Astro.props
+const full = title ? `${title} | ${site.name}` : site.name
+const path = Astro.url.pathname
+const nav = [
+  { href: "/", label: "Home" },
+  { href: "/resume/", label: "Resume" },
+  { href: "/poems/", label: "Poems" },
+  { href: "/notes/", label: "Notes" },
+]
+const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href))
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{full}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={full} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href={new URL(path, Astro.site)} />
+    <script is:inline>
+      try {
+        var t = localStorage.getItem("theme");
+        if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <header class="nav">
+      <nav class="nav-pill" aria-label="Main">
+        {nav.map((n) => <a href={n.href} aria-current={active(n.href) ? "page" : undefined}>{n.label}</a>)}
+        <button id="theme" type="button" aria-label="Toggle light and dark theme">Theme</button>
+      </nav>
+    </header>
+    <main class="wrap"><slot /></main>
+    <footer>
+      <div class="wrap">
+        <span>{site.name}</span>
+        <span>{site.links.map((l, i) => <><a href={l.href}>{l.label}</a>{i < site.links.length - 1 ? " · " : ""}</>)}</span>
+      </div>
+    </footer>
+    <script is:inline>
+      document.getElementById("theme").addEventListener("click", function () {
+        var root = document.documentElement;
+        var dark = root.dataset.theme
+          ? root.dataset.theme === "dark"
+          : matchMedia("(prefers-color-scheme: dark)").matches;
+        var next = dark ? "light" : "dark";
+        root.dataset.theme = next;
+        try { localStorage.setItem("theme", next); } catch (e) {}
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+---
+import Base from "../../layouts/Base.astro"
+import EntryList from "../../components/EntryList.astro"
+import { getCollection } from "astro:content"
+
+const notes = (await getCollection("notes", (e) => !e.data.draft)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+---
+<Base title="Notes" description="Notes and writing.">
+  <h1>Notes</h1>
+  <p class="lede">Things I am thinking about.</p>
+  <EntryList base="/notes/" empty="The first notes are on their way."
+    items={notes.map((e) => ({ id: e.id, title: e.data.title, date: e.data.date, lang: e.data.lang }))} />
+</Base>

@@ -1,0 +1,18 @@
+---
+interface Item { id: string; title: string; date: Date; lang: string; kind?: string }
+interface Props { base: string; items: Item[]; empty: string }
+const { base, items, empty } = Astro.props
+const fmt = (d: Date) => d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" })
+---
+{items.length === 0 ? <p class="empty">{empty}</p> : (
+  <ul class="list">
+    {items.map((i) => (
+      <li>
+        <a href={`${base}${i.id}/`}>
+          <span class="t" lang={i.lang} dir={i.lang === "ur" ? "rtl" : undefined}>{i.title}</span>
+          <span class="m">{i.kind ? `${i.kind} · ` : ""}{fmt(i.date)}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+)}

@@ -1,0 +1,38 @@
+---
+import Base from "../layouts/Base.astro"
+import { resume } from "../data/resume"
+import { site } from "../data/site"
+
+const empty = !resume.summary && !resume.experience.length && !resume.education.length && !resume.skills.length
+---
+<Base title="Resume" description={`Resume of ${site.name}.`}>
+  <h1>Resume</h1>
+  <p class="lede">{resume.summary || "Coming soon."}</p>
+  {resume.pdf && <a class="btn" href={resume.pdf}>Download PDF</a>}
+
+  {resume.experience.length > 0 && (<>
+    <h2 class="label">Experience</h2>
+    {resume.experience.map((r) => (
+      <div class="role">
+        <h3>{r.title}, {r.company}</h3>
+        <div class="m">{r.period}{r.location ? ` · ${r.location}` : ""}</div>
+        {r.bullets?.length ? <ul>{r.bullets.map((b) => <li>{b}</li>)}</ul> : null}
+      </div>
+    ))}
+  </>)}
+
+  {resume.education.length > 0 && (<>
+    <h2 class="label">Education</h2>
+    {resume.education.map((e) => (
+      <div class="role"><h3>{e.school}</h3><div class="m">{e.degree} · {e.period}</div></div>
+    ))}
+  </>)}
+
+  {resume.skills.length > 0 && (<>
+    <h2 class="label">Skills</h2>
+    {resume.skills.map((s) => (
+      <div class="role"><h3>{s.group}</h3><div class="m">{s.items.join(", ")}</div></div>
+    ))}
+  </>)}
+  {empty && <p class="empty">Resume details are being added.</p>}
+</Base>

@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro"
+import EntryList from "../components/EntryList.astro"
+import { getCollection } from "astro:content"
+import { site } from "../data/site"
+
+const byDate = <T extends { data: { date: Date } }>(a: T, b: T) => b.data.date.getTime() - a.data.date.getTime()
+const poems = (await getCollection("poems", (e) => !e.data.draft)).sort(byDate).slice(0, 3)
+const notes = (await getCollection("notes", (e) => !e.data.draft)).sort(byDate).slice(0, 3)
+const toItem = (e: any) => ({ id: e.id, title: e.data.title, date: e.data.date, lang: e.data.lang, kind: e.data.kind })
+---
+<Base>
+  <h1>{site.name}</h1>
+  <p class="lede">{site.tagline}</p>
+
+  <h2 class="label">Recent poems</h2>
+  <EntryList base="/poems/" items={poems.map(toItem)} empty="Nothing here yet." />
+
+  <h2 class="label">Recent notes</h2>
+  <EntryList base="/notes/" items={notes.map(toItem)} empty="Nothing here yet." />
+</Base>
