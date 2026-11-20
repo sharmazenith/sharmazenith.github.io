@@ -1,0 +1,14 @@
+---
+import Frame from "../../../layouts/Frame.astro"
+import Tabs from "../../../components/Tabs.astro"
+import NotesList from "../../../components/NotesList.astro"
+import { SITE, SPACE_NAME } from "../../../config"
+import { allShayari, allNotes } from "../../../lib/content"
+
+const [shayari, notes] = await Promise.all([allShayari(), allNotes()])
+---
+<Frame section="space" title={`${SPACE_NAME} · ${SITE.name}`} crumbs={[{ label: SPACE_NAME, href: "/kalam/" }, { label: "notes", href: "/kalam/notes/" }]}>
+  <p class="lead" style="margin-top:0">Shayari, mostly written late. Notes on data, books, and whatever stayed with me.</p>
+  <Tabs active="notes" shayari={shayari.length} notes={notes.length} />
+  <div id="list"><NotesList items={notes} /></div>
+</Frame>

@@ -1,0 +1,16 @@
+---
+import Lines from "./Lines.astro"
+import { toLines, fmtMonth, type Shayari } from "../lib/content"
+interface Props { items: Shayari[] }
+const { items } = Astro.props
+---
+{items.length === 0 ? <p class="empty list-empty">nothing here yet.</p> : (
+  <div class="grid">
+    {items.map((e) => (
+      <a class="cell" href={`/kalam/shayari/${e.id}/`}>
+        <Lines class="lines" lines={toLines(e.body, 4)} lang={e.data.lang} />
+        <div class="meta">{e.data.form}, {fmtMonth(e.data.date)}</div>
+      </a>
+    ))}
+  </div>
+)}

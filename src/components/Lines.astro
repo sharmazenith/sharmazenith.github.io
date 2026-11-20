@@ -1,0 +1,8 @@
+---
+import type { Line } from "../lib/content"
+interface Props { lines: Line[]; lang: string; class?: string }
+const { lines, lang, class: cls } = Astro.props
+---
+<div class={cls} lang={lang} dir={lang === "ur" ? "rtl" : undefined}>
+  {lines.map((l) => <p class={l.gap ? "gap" : l.alt ? "alt" : undefined}>{l.text}</p>)}
+</div>
