@@ -76,7 +76,6 @@ ul { list-style: none; }
 .brand { display: flex; align-items: flex-start; gap: 18px; min-width: 0; }
 .logo { display: block; color: var(--fg); line-height: 1; margin-top: var(--logo-top); }
 .sig { display: block; height: var(--logo-h); width: auto; fill: currentColor; overflow: visible; }
-.logo-text { display: block; font-size: 30px; line-height: var(--logo-h); font-weight: 600; letter-spacing: -.02em; }
 .crumbs { display: flex; align-items: baseline; gap: 10px; padding-top: var(--text-top); font-size: 15px; color: var(--muted); white-space: nowrap; min-width: 0; }
 .crumbs a { transition: color .2s var(--ease); }
 .crumbs a:hover { color: var(--fg); }
@@ -158,7 +157,6 @@ ul { list-style: none; }
 .sec.bare::after { display: none; }
 .sec-btn { display: flex; align-items: center; gap: 8px; }
 .lead { font-size: 19px; line-height: 1.6; color: var(--soft); max-width: 740px; margin-top: 20px; }
-.todo { color: var(--faint); }
 
 .row { display: grid; grid-template-columns: 140px minmax(0, 1fr) auto; gap: 24px; padding: 22px 0; border-bottom: 1px solid var(--line); transition: border-color .3s var(--ease); }
 .row .when { font-size: 14px; color: var(--faint); font-variant-numeric: tabular-nums; padding-top: 3px; }

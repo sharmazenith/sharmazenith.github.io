@@ -12,7 +12,7 @@ export default {
     const headers = {
       "content-type": "application/json",
       "cache-control": "public, max-age=15",
-      "access-control-allow-origin": origin === ORIGIN || origin === "http://localhost:4321" ? origin : ORIGIN,
+      "access-control-allow-origin": origin === ORIGIN || origin === "http://localhost:3000" ? origin : ORIGIN,
       vary: "Origin",
     }
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers })

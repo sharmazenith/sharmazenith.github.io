@@ -4,4 +4,5 @@ import { defineConfig } from "astro/config"
 export default defineConfig({
   site: "https://sharmazenith.github.io",
   output: "static",
+  server: { port: 3000 },
 })

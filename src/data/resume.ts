@@ -2,8 +2,8 @@ import { SPACE_NAME } from "../config"
 
 // Placeholder content. Every TODO is to be replaced with real details.
 // Do not publish employers, dates or tools that are not yours.
-export interface Job { when: string; title: string; bullets: string[]; company: string; city: string }
-export interface Project { name: string; year: string; description: string; href?: string }
+interface Job { when: string; title: string; bullets: string[]; company: string; city: string }
+interface Project { name: string; year: string; description: string; href?: string }
 
 export const about = `I'm a data engineer. I like pipelines that run quietly and numbers that mean what they say. Most days I'm modelling data and making sure the dashboard agrees with the database. The rest of me lives in ${SPACE_NAME}.`
 
