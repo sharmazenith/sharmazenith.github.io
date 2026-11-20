@@ -67,9 +67,11 @@ const pageTitle = title ?? SITE.name
       </div>
     </header>
 
+    <div class="sr" id="announce" role="status" aria-live="polite"></div>
+
     <div class="body">
       <div class="container">
-        <main class="pane" id="pane" tabindex="-1" data-section={section}>
+        <main class="pane" id="pane" data-section={section}>
           <slot />
         </main>
         <Intro />

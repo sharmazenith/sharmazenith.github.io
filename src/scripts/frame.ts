@@ -89,7 +89,8 @@ async function go(href: string, push: boolean) {
   // the nav underline always slides; the tab underline slides only when the tab bar stayed put
   place(document.getElementById("nav-bar"), document.getElementById("nav"), true)
   place(document.getElementById("tab-bar"), document.querySelector<HTMLElement>(".tabset"), listOnly)
-  if (!listOnly) pane.focus({ preventScroll: true })
+  const announce = document.getElementById("announce")
+  if (announce) announce.textContent = doc.title // screen readers hear the new page
   await fade(target, 1, 160)
   target.style.transition = ""
 }
