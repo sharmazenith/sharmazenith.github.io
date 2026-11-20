@@ -90,13 +90,14 @@ ul { list-style: none; }
 [data-theme="dark"] .theme .half { transform: rotate(180deg); }
 
 /* body grid */
-.body { flex: 1; display: block; }
-.body .container { display: grid; grid-template-columns: minmax(0, 1fr) var(--panel); align-items: stretch; }
-.pane { padding: 56px 96px 96px 0; min-height: calc(100vh - var(--header) - 72px); min-width: 0; }
+/* the body fills exactly the space between header and footer, so short pages never scroll */
+.body { flex: 1; display: flex; flex-direction: column; }
+.body .container { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) var(--panel); align-items: stretch; }
+.pane { padding: 48px 96px 64px 0; min-width: 0; }
 
 /* intro panel */
 .aside { border-left: 1px solid var(--line); transition: border-color .3s var(--ease); }
-.intro { position: sticky; top: var(--header); padding: 56px 0 48px 48px; }
+.intro { position: sticky; top: var(--header); padding: 48px 0 48px 48px; }
 .avatar { width: 72px; height: 72px; border: 1px solid var(--line); background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 600; color: var(--fg); margin-bottom: 28px; }
 .hello { position: relative; font-size: 23px; line-height: 1.4; color: var(--muted); text-wrap: pretty; }
 .hello strong { color: var(--fg); font-weight: 600; }
@@ -150,7 +151,7 @@ ul { list-style: none; }
 .footer a:hover, .footer button:hover { color: var(--fg); }
 
 /* pane content */
-.sec { display: flex; align-items: center; gap: 16px; margin: 64px 0 8px; font-size: 13.5px; font-weight: 500; color: var(--muted); }
+.sec { display: flex; align-items: center; gap: 16px; margin: 48px 0 8px; font-size: 13.5px; font-weight: 500; color: var(--muted); }
 .sec::after { content: ""; flex: 1; height: 1px; background: var(--line); transition: background-color .3s var(--ease); }
 .sec:first-child { margin-top: 0; }
 .sec.bare { margin: 0; padding: 14px 0; }
@@ -252,7 +253,7 @@ dl { margin: 0; }
   .body .container { grid-template-columns: minmax(0, 1fr); }
   .aside { order: -1; border-left: 0; border-bottom: 1px solid var(--line); }
   .intro { position: static; padding: 40px 0; }
-  .pane { padding: 40px 0 72px; min-height: 0; }
+  .pane { padding: 40px 0 56px; }
   .crumbs .last { display: none; }
 }
 @media (max-width: 639px) {
