@@ -1,7 +1,8 @@
 ---
 import "../styles/global.css"
 import Intro from "../components/Intro.astro"
-import { SITE, SPACE_NAME } from "../config"
+import Signature from "../components/Signature.astro"
+import { SITE, SPACE_NAME, CITY, NOW_PLAYING_ENDPOINT, NOW_PLAYING_MOCK } from "../config"
 
 interface Props {
   title?: string
@@ -11,7 +12,6 @@ interface Props {
 }
 const { title, section, crumbs = [], description = `${SITE.name}: résumé, shayari and notes.` } = Astro.props
 const pageTitle = title ?? SITE.name
-const trail = [{ label: SITE.name, href: "/" }, ...crumbs]
 ---
 <!doctype html>
 <html lang="en">
@@ -30,20 +30,29 @@ const trail = [{ label: SITE.name, href: "/" }, ...crumbs]
         try { t = localStorage.getItem("theme"); } catch (e) {}
         if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", t);
+        try {
+          if (!sessionStorage.getItem("sig") && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            document.documentElement.classList.add("sig-draw");
+            sessionStorage.setItem("sig", "1");
+          }
+        } catch (e) {}
       })();
     </script>
   </head>
   <body>
     <header class="header">
       <div class="container">
-        <nav class="crumbs" id="crumbs" aria-label="breadcrumb">
-          {trail.map((c, i) => (
-            <>
-              {i > 0 && <span class="sep" aria-hidden="true">/</span>}
-              <a href={c.href} class={i === trail.length - 1 && i > 1 ? "last" : undefined}>{c.label}</a>
-            </>
-          ))}
-        </nav>
+        <div class="brand">
+          <Signature />
+          <nav class="crumbs" id="crumbs" aria-label="breadcrumb">
+            {crumbs.map((c, i) => (
+              <>
+                <span class="sep" aria-hidden="true">/</span>
+                <a href={c.href} class={i === crumbs.length - 1 && i > 0 ? "last" : undefined}>{c.label}</a>
+              </>
+            ))}
+          </nav>
+        </div>
         <nav class="nav" id="nav" aria-label="main">
           <a href="/" data-section="home" aria-current={section === "home" ? "page" : undefined}>home</a>
           <a href="/kalam/" data-section="space" aria-current={section === "space" ? "page" : undefined}>{SPACE_NAME}</a>
@@ -67,15 +76,25 @@ const trail = [{ label: SITE.name, href: "/" }, ...crumbs]
       </div>
     </div>
 
-    <footer class="footer">
-      <div class="container">
-        <span>{SITE.name}, {SITE.year}</span>
-        <nav aria-label="elsewhere">
+    <footer class="footer"
+      data-lat={CITY.lat} data-lon={CITY.lon} data-tz={CITY.tz}
+      data-endpoint={NOW_PLAYING_ENDPOINT} data-mock={JSON.stringify(NOW_PLAYING_MOCK)}>
+      <div class="container foot">
+        <div class="where tnum" aria-label="where and when">
+          <span>{CITY.name}</span>
+          <i class="dot" id="dot-temp" hidden></i><span id="temp" hidden></span>
+          <i class="dot"></i><span id="time"></span>
+        </div>
+        <div class="np" id="np" data-state="idle">
+          <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="np-win"><span class="np-track" id="np-track">not playing</span></span>
+        </div>
+        <nav class="elsewhere" aria-label="elsewhere">
           <a href={SITE.github} rel="noopener">github</a>
           {SITE.linkedin && <a href={SITE.linkedin} rel="noopener">linkedin</a>}
           {SITE.email && <a href={`mailto:${SITE.email}`}>email</a>}
+          <button id="sound" type="button" aria-pressed="true">sound on</button>
         </nav>
-        <span class="tnum" id="clock" data-tz={SITE.timezone}>my time</span>
       </div>
     </footer>
 

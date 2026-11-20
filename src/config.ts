@@ -2,11 +2,17 @@
 // Alternatives: "baithak", "diary", "margins".
 export const SPACE_NAME = "kalam"
 
+// TODO: confirm. Omaha was assumed. Drives the footer place, temperature and clock.
+export const CITY = { name: "omaha", lat: 41.26, lon: -95.93, tz: "America/Chicago" }
+
+// Cloudflare Worker URL that returns { isPlaying, title, artist, url }. See worker/README.md.
+// While empty, the footer shows NOW_PLAYING_MOCK.
+export const NOW_PLAYING_ENDPOINT = ""
+// TODO: mock data, shown only until NOW_PLAYING_ENDPOINT is set. Not real listening data.
+export const NOW_PLAYING_MOCK = { isPlaying: true, title: "Hurt", artist: "Johnny Cash", url: "" }
+
 export const SITE = {
   name: "Zenith Sharma",
-  year: 2026,
-  // TODO: confirm. Drives the footer clock ("my time, 4:20 pm").
-  timezone: "America/Chicago",
   github: "https://github.com/sharmazenith",
   // TODO: add before publishing. Empty values are hidden everywhere they would appear.
   linkedin: "",

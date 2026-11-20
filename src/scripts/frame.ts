@@ -1,6 +1,9 @@
 // Persistent frame: header, intro panel and footer are never replaced.
 // Only #pane (or #list inside it, when moving between shayari and notes) changes.
 
+import "./sound"
+import "./footer"
+
 const root = document.documentElement
 const pane = document.getElementById("pane") as HTMLElement
 const reduced = matchMedia("(prefers-reduced-motion: reduce)")
@@ -153,17 +156,6 @@ document.getElementById("copy-email")?.addEventListener("click", async (e) => {
   try { await navigator.clipboard.writeText(email); say("copied") }
   catch { say(`couldn't copy. the email is ${email}`) }
 })
-
-/* footer clock */
-const clock = document.getElementById("clock") as HTMLElement
-function tick() {
-  try {
-    const t = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: clock.dataset.tz }).format(new Date())
-    clock.textContent = `my time, ${t.toLowerCase()}`
-  } catch { /* unknown timezone: leave the label as is */ }
-}
-tick()
-setInterval(tick, 15000)
 
 /* first placement without animation, then keep it right on resize and font load */
 placeAll(false)
