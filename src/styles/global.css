@@ -68,11 +68,13 @@ ul { list-style: none; }
 /* header */
 .header { height: var(--header); border-bottom: 1px solid var(--line); box-sizing: border-box; transition: border-color .3s var(--ease); }
 .header .container { height: 100%; display: flex; justify-content: space-between; align-items: flex-end; }
-.brand { display: flex; align-items: baseline; gap: 18px; padding-bottom: 16px; min-width: 0; }
-.logo { display: block; color: var(--fg); line-height: 1; }
+/* logo and breadcrumb are each pinned to the header's bottom edge, so the logo never moves with the breadcrumb.
+   Logo letters, breadcrumb text and nav text all share one baseline. */
+.brand { display: flex; align-items: flex-end; gap: 18px; min-width: 0; }
+.logo { display: block; color: var(--fg); line-height: 1; margin-bottom: 16px; }
 .sig { display: block; height: 34px; width: auto; fill: currentColor; overflow: visible; }
 .logo-text { display: block; font-size: 30px; line-height: 34px; font-weight: 600; letter-spacing: -.02em; }
-.crumbs { display: flex; align-items: baseline; gap: 10px; font-size: 15px; color: var(--muted); white-space: nowrap; min-width: 0; }
+.crumbs { display: flex; align-items: baseline; gap: 10px; padding-bottom: 20px; font-size: 15px; color: var(--muted); white-space: nowrap; min-width: 0; }
 .crumbs a { transition: color .2s var(--ease); }
 .crumbs a:hover { color: var(--fg); }
 .crumbs .sep { color: var(--faint); }
