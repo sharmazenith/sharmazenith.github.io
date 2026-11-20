@@ -108,6 +108,12 @@ document.addEventListener("click", (e) => {
 addEventListener("popstate", () => void go(location.pathname, false))
 history.scrollRestoration = "manual"
 
+/* signature: once the pen strokes finish, drop the mask so the exact artwork shows */
+if (root.classList.contains("sig-draw")) {
+  const end = Number(document.querySelector<SVGElement>(".sig")?.dataset.end ?? 3.2)
+  setTimeout(() => root.classList.remove("sig-draw"), end * 1000 + 150)
+}
+
 /* theme */
 const themeBtn = document.getElementById("theme") as HTMLButtonElement
 const label = () => themeBtn.setAttribute("aria-label", root.dataset.theme === "dark" ? "switch to light theme" : "switch to dark theme")

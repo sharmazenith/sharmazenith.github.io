@@ -70,9 +70,8 @@ ul { list-style: none; }
 .header .container { height: 100%; display: flex; justify-content: space-between; align-items: flex-end; }
 .brand { display: flex; align-items: baseline; gap: 18px; padding-bottom: 16px; min-width: 0; }
 .logo { display: block; color: var(--fg); line-height: 1; }
-.logo-art { display: block; height: 34px; }
-.logo-art svg { display: block; height: 34px; width: auto; fill: currentColor; }
-.logo-text { font-size: 30px; line-height: 34px; font-weight: 600; letter-spacing: -.02em; }
+.sig { display: block; height: 34px; width: auto; fill: currentColor; overflow: visible; }
+.logo-text { display: block; font-size: 30px; line-height: 34px; font-weight: 600; letter-spacing: -.02em; }
 .crumbs { display: flex; align-items: baseline; gap: 10px; font-size: 15px; color: var(--muted); white-space: nowrap; min-width: 0; }
 .crumbs a { transition: color .2s var(--ease); }
 .crumbs a:hover { color: var(--fg); }
@@ -239,8 +238,11 @@ dl { margin: 0; }
 .pager a { transition: color .2s var(--ease); }
 .pager a:hover { color: var(--fg); }
 
-@keyframes write { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-.sig-draw .logo-art { animation: write 1.7s cubic-bezier(.45, .05, .25, 1) .15s both; }
+/* signature: each pen stroke grows along its own path inside a mask */
+.pen { fill: none; stroke: #fff; stroke-width: 24; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.sig-draw .ink { mask: url(#sig-mask); }
+.sig-draw .pen { animation: pen linear forwards; animation-delay: var(--delay); animation-duration: var(--dur); }
+@keyframes pen { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 
 @media (max-width: 1099px) {
   :root { --gutter: 28px; }

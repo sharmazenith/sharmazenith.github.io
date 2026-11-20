@@ -7,7 +7,7 @@ One quiet room: a fixed frame (header, intro panel, footer) where only the pane 
 ## Change things in one place
 
 - `src/config.ts`: `SPACE_NAME` (section name), `CITY` (footer place, weather, clock), `NOW_PLAYING_ENDPOINT`, links, email, résumé PDF. Empty values are hidden.
-- `src/assets/signature.svg`: the traced signature (filled path, drawn in once per session). Delete it to fall back to a plain wordmark.
+- `src/assets/signature.svg`: the traced signature artwork. `src/data/signature-strokes.json`: the pen strokes (writing order and timing) that reveal it once per session, then the mask is removed so the exact artwork shows. Delete the SVG to fall back to a plain wordmark.
 - `worker/`: Cloudflare Worker for the footer's now playing. Not deployed by CI. See `worker/README.md`.
 - `src/styles/global.css`, top of file: `--font-sans`, `--dark-base` and the color tokens.
 - `src/data/resume.ts`: résumé content. Everything marked TODO is a placeholder.
