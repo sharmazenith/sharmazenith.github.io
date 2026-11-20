@@ -15,5 +15,8 @@
     "@fontsource-variable/noto-serif-devanagari": "^5.3.0",
     "astro": "^7.4.13",
     "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22.23.4"
   }
 }
