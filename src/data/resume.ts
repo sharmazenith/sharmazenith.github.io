@@ -5,7 +5,13 @@ import { SPACE_NAME } from "../config"
 interface Job { when: string; title: string; bullets: string[]; company: string; city: string }
 interface Project { name: string; year: string; description: string; href?: string }
 
-export const about = `I'm a data engineer. I like pipelines that run quietly and numbers that mean what they say. Most days I'm modelling data and making sure the dashboard agrees with the database. The rest of me lives in ${SPACE_NAME}.`
+export const intro = [
+  `Starting an introduction by saying I'm not entirely sure what to put here is probably an odd choice, though I suppose that's the point of a blog. It's a place for things that cross my mind, things I find interesting, things I'm trying to figure out, and the occasional thought that probably should have stayed in my head.`,
+  `By day I'm a data engineer, and outside of that I spend plenty of time swimming, playing chess, listening to music, practicing harmonium, and writing the occasional shayari or song. It's a specific mix, I know—I like getting lost in things long enough to get reasonably good at them.`,
+  `Along the way, I've picked up a fondness for Indian classical music and ghazals, a questionable tolerance for opening theory, and an ongoing relationship with butterfly. I'm also drawn to people who are a bit unconventional, have interesting things to say, and aren't constantly managing how they're perceived.`,
+  `I don't know yet what this space will become. Probably a bit of everything: writing, observations, and things I've made or stumbled across. Hopefully there's something worth reading here, though that part is up to you.`,
+  `Welcome. Let's see where it goes.`,
+]
 
 export const work: Job = {
   when: "TODO — now",

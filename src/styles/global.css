@@ -138,8 +138,9 @@ ul { list-style: none; }
 .sec.bare { margin: 0; padding: 14px 0; }
 .sec.bare::after { display: none; }
 .sec-btn { display: flex; align-items: center; gap: 8px; }
-.lead { font: var(--type-body); color: var(--soft); max-width: var(--measure-text); margin-top: 20px; }
+.lead { font: var(--type-body); color: var(--soft); max-width: none; margin-top: 20px; text-align: justify; text-justify: inter-word; hyphens: none; text-wrap: pretty; }
 
+.lead + .lead { margin-top: 1em; }
 .row { display: grid; grid-template-columns: 140px minmax(0, 1fr) auto; align-items: baseline; gap: 24px; padding: 22px 0; border-bottom: 1px solid var(--line); transition: border-color .3s var(--ease); }
 .row .when { color: var(--muted); font-variant-numeric: tabular-nums; }
 .row .what { font: var(--type-section); color: var(--fg); }

@@ -1,12 +1,12 @@
 ---
 import Frame from "../layouts/Frame.astro"
-import { about, work, before, built, tools, school } from "../data/resume"
+import { intro, work, before, built, tools, school } from "../data/resume"
 
 const rows = before
 ---
 <Frame section="home">
-  <h2 class="sec">In short</h2>
-  <p class="lead">{about}</p>
+  <h2 class="sec">Intro</h2>
+  {intro.map((p) => <p class="lead">{p}</p>)}
 
   <h2 class="sec">Work</h2>
   <div class="row">
