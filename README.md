@@ -39,3 +39,7 @@ npm run build
 ```
 
 Needs Node 22.23.4 or newer.
+
+## Type
+
+`src/styles/typography.css` is the type standard: Neue Montreal at one weight (500), four sizes (Display 28, Section 20, Body 16, Small 11 uppercase), mobile steps down to 24, 18 and 15. Use the `--type-*` shorthands, never raw font sizes or weights. Colors: ink `#1a1b1f`, soft `#555`, muted `#979797`, rule `#d9d9d9`. To change the typeface, edit `--font-brand` and the `@font-face` at the top of that file. The font file is licensed, so confirm the web license covers embedding.
