@@ -3,6 +3,7 @@ import "../styles/typography.css"
 import "../styles/global.css"
 import Intro from "../components/Intro.astro"
 import Signature from "../components/Signature.astro"
+import fontUrl from "../assets/fonts/neue-montreal-500.woff2?url"
 import { SITE, SPACE_NAME, CITY, NOW_PLAYING_ENDPOINT, NOW_PLAYING_MOCK } from "../config"
 
 interface Props {
@@ -24,6 +25,7 @@ const pageTitle = title ?? SITE.name
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta name="color-scheme" content="light dark" />
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
     <meta name="theme-color" content="#89AEE8" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script is:inline>

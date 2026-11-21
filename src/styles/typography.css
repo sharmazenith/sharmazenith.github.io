@@ -8,7 +8,7 @@
   src: url("../assets/fonts/neue-montreal-500.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
-  font-display: swap;
+  font-display: block; /* preloaded in Frame.astro: no flash of a fallback face */
 }
 @font-face {
   font-family: "Script Devanagari";

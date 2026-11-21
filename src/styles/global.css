@@ -80,8 +80,9 @@ ul { list-style: none; }
 .intro { position: sticky; top: var(--header); padding: 48px 0 48px 48px; }
 .avatar { width: 72px; height: 72px; border: 1px solid var(--line); background: var(--card); display: flex; align-items: center; justify-content: center; font: var(--type-section); color: var(--fg); margin-bottom: 28px; }
 .hello { position: relative; font: var(--type-display); letter-spacing: var(--track-display); color: var(--muted); text-wrap: pretty; }
+.hello .line { display: block; text-wrap: balance; }
 .hello strong { color: var(--fg); }
-.write { display: inline; }
+.write { display: block; margin-top: 8px; }
 .write-btn { color: var(--fg); border-bottom: 1px solid var(--accent); }
 .menu { position: absolute; left: 0; top: calc(100% + 10px); width: 260px; z-index: 5; background: var(--bg); border: 1px solid var(--line); font: var(--type-body); }
 .menu[hidden] { display: none; }
