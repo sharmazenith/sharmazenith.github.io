@@ -1,0 +1,6 @@
+name = "now-playing"
+main = "now-playing.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+# Secrets are set with `npx wrangler secret put`, never in this file:
+#   SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN
