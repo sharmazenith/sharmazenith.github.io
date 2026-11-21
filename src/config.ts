@@ -12,6 +12,7 @@ export const NOW_PLAYING_ENDPOINT = "https://now-playing.znthshrm.workers.dev"
 export const SITE = {
   name: "Zenith Sharma",
   github: "https://github.com/sharmazenith",
+  spotify: "https://open.spotify.com/user/31e5fsjkhevmaekqphvkuzhwaqwm",
   // TODO: add before publishing. Empty values are hidden everywhere they would appear.
   linkedin: "",
   email: "",

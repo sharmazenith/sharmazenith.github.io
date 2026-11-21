@@ -116,9 +116,10 @@ ul { list-style: none; }
 /* the ring sits 3.8% inside its canvas, so the canvas is pulled left by that much: the ring lines up with the text edge */
 .np { --vinyl: 140px; margin-top: 32px; }
 .np-vinyl { width: var(--vinyl); aspect-ratio: 1; margin: 0 0 12px calc(var(--vinyl) * -0.0383); }
-.np-head { display: flex; align-items: center; gap: 10px; }
+.np-head { display: flex; align-items: center; gap: 10px; width: fit-content; color: inherit; }
 .sp { display: block; width: 16px; height: 16px; flex: none; fill: var(--muted); transition: fill .3s var(--ease); }
-.np[data-state="idle"]:hover .sp { fill: var(--soft); }
+.np[data-state="idle"] .np-head:hover .sp { fill: var(--soft); }
+.np-head:hover .np-label { color: var(--fg); }
 .np[data-state="playing"] .sp { fill: #1ED760; } /* Spotify green, live only */
 .np-label { color: var(--muted); transition: color .3s var(--ease); }
 .np[data-state="playing"] .np-label { color: var(--fg); }
