@@ -119,6 +119,9 @@ ul { list-style: none; }
 .np[data-state="playing"] .eq i:nth-child(2) { animation-duration: .8s; }
 .np[data-state="playing"] .eq i:nth-child(3) { animation-duration: 1.15s; }
 @keyframes eq { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
+.np-label { color: var(--fg); white-space: nowrap; }
+.np[data-state="idle"] .np-label { display: none; }
+.np[data-state="idle"] .np-win { width: auto; }
 .np-win { display: block; width: 230px; overflow: hidden; white-space: nowrap; }
 .np-win.run { -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); }
 .np-track { display: inline-flex; color: var(--soft); }

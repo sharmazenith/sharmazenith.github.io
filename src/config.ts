@@ -6,10 +6,8 @@ export const SPACE_NAME = "Kalam"
 export const CITY = { name: "Omaha", lat: 41.26, lon: -95.93, tz: "America/Chicago" }
 
 // Cloudflare Worker URL that returns { isPlaying, title, artist, url }. See worker/README.md.
-// While empty, the footer shows NOW_PLAYING_MOCK.
+// While empty, the footer says Zenith is not live on Spotify.
 export const NOW_PLAYING_ENDPOINT = ""
-// TODO: mock data, shown only until NOW_PLAYING_ENDPOINT is set. Not real listening data.
-export const NOW_PLAYING_MOCK = { isPlaying: true, title: "Hurt", artist: "Johnny Cash", url: "" }
 
 export const SITE = {
   name: "Zenith Sharma",

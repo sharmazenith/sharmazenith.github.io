@@ -3,7 +3,7 @@
 
 const footer = document.querySelector<HTMLElement>(".footer")!
 const reduced = matchMedia("(prefers-reduced-motion: reduce)")
-const { lat, lon, tz, endpoint, mock } = footer.dataset
+const { lat, lon, tz, endpoint } = footer.dataset
 
 /* time: 12 hour, am/pm in capitals, updated on the minute boundary */
 const timeEl = document.getElementById("time")!
@@ -50,7 +50,7 @@ let shown = ""
 
 function render(p: Playing | null) {
   const playing = !!(p && p.isPlaying && p.title)
-  const text = playing ? `${p!.title}${p!.artist ? ` · ${p!.artist}` : ""}` : "Not playing"
+  const text = playing ? `${p!.title}${p!.artist ? ` · ${p!.artist}` : ""}` : "Zenith is not live on Spotify right now"
   const key = `${playing}|${text}|${p?.url ?? ""}`
   if (key === shown) return
   shown = key
@@ -90,7 +90,7 @@ function render(p: Playing | null) {
 
 async function nowPlaying() {
   try {
-    if (!endpoint) { render(JSON.parse(mock ?? "null")); return } // TODO mock until the endpoint is set
+    if (!endpoint) { render(null); return } // not connected to Spotify yet
     const ctl = new AbortController()
     const timer = setTimeout(() => ctl.abort(), 6000)
     const res = await fetch(endpoint, { signal: ctl.signal, headers: { accept: "application/json" } })

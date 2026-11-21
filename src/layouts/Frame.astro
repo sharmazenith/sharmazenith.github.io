@@ -4,7 +4,7 @@ import "../styles/global.css"
 import Intro from "../components/Intro.astro"
 import Signature from "../components/Signature.astro"
 import fontUrl from "../assets/fonts/neue-montreal-500.woff2?url"
-import { SITE, SPACE_NAME, CITY, NOW_PLAYING_ENDPOINT, NOW_PLAYING_MOCK } from "../config"
+import { SITE, SPACE_NAME, CITY, NOW_PLAYING_ENDPOINT } from "../config"
 
 interface Props {
   title?: string
@@ -84,7 +84,7 @@ const pageTitle = title ?? SITE.name
 
     <footer class="footer"
       data-lat={CITY.lat} data-lon={CITY.lon} data-tz={CITY.tz}
-      data-endpoint={NOW_PLAYING_ENDPOINT} data-mock={JSON.stringify(NOW_PLAYING_MOCK)}>
+      data-endpoint={NOW_PLAYING_ENDPOINT}>
       <div class="container foot">
         <div class="where tnum" aria-label="where and when">
           <span>{CITY.name}</span>
@@ -93,7 +93,8 @@ const pageTitle = title ?? SITE.name
         </div>
         <div class="np" id="np" data-state="idle">
           <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span class="np-win"><span class="np-track" id="np-track">Not playing</span></span>
+          <span class="np-label">Live on Spotify</span>
+          <span class="np-win"><span class="np-track" id="np-track">Zenith is not live on Spotify right now</span></span>
         </div>
         <nav class="elsewhere" aria-label="elsewhere">
           <a href={SITE.github} rel="noopener">GitHub</a>
