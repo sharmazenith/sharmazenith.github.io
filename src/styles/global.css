@@ -113,8 +113,9 @@ ul { list-style: none; }
 .where[hidden], .where [hidden] { display: none; }
 .dot { display: block; width: 3px; height: 3px; background: var(--muted); flex: none; }
 /* now playing (right column): Spotify mark, a live label, and a ticker of the whole title */
-.np { margin-top: 40px; }
-.np-vinyl { width: min(208px, 100%); aspect-ratio: 1; margin-bottom: 16px; }
+/* the ring sits 3.8% inside its canvas, so the canvas is pulled left by that much: the ring lines up with the text edge */
+.np { --vinyl: 140px; margin-top: 32px; }
+.np-vinyl { width: var(--vinyl); aspect-ratio: 1; margin: 0 0 12px calc(var(--vinyl) * -0.0383); }
 .np-head { display: flex; align-items: center; gap: 10px; }
 .sp { display: block; width: 16px; height: 16px; flex: none; fill: var(--muted); transition: fill .3s var(--ease); }
 .np[data-state="idle"]:hover .sp { fill: var(--soft); }
