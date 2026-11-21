@@ -13,6 +13,7 @@ export const NOW_PLAYING_MOCK = { isPlaying: true, title: "Hurt", artist: "Johnn
 
 export const SITE = {
   name: "Zenith Sharma",
+  employer: "Forte Integrated Systems", // TODO confirm the exact company name
   github: "https://github.com/sharmazenith",
   // TODO: add before publishing. Empty values are hidden everywhere they would appear.
   linkedin: "",
