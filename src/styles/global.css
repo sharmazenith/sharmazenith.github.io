@@ -120,7 +120,8 @@ ul { list-style: none; }
 .np[data-state="playing"] .eq i:nth-child(3) { animation-duration: 1.15s; }
 @keyframes eq { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
 .sp { display: block; width: 16px; height: 16px; flex: none; fill: var(--muted); transition: fill .3s var(--ease); }
-.np[data-state="playing"] .sp { fill: var(--accent); }
+.np[data-state="idle"]:hover .sp { fill: var(--soft); }
+.np[data-state="playing"] .sp { fill: #1ED760; } /* Spotify green, live only */
 .np[data-state="idle"] .eq { display: none; }
 .np-label { color: var(--fg); white-space: nowrap; }
 .np[data-state="idle"] .np-label { display: none; }
