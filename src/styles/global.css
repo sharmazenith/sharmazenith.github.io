@@ -78,7 +78,7 @@ ul { list-style: none; }
 /* intro panel */
 .aside { border-left: 1px solid var(--line); transition: border-color .3s var(--ease); }
 .intro { position: sticky; top: var(--header); padding: 48px 0 48px 48px; }
-.avatar { display: block; width: 72px; height: 72px; object-fit: cover; border: 1px solid var(--line); background: var(--card); margin-bottom: 28px; }
+.avatar { display: block; width: 72px; height: 72px; object-fit: cover; border-radius: 50%; border: 1px solid var(--line); background: var(--card); margin-bottom: 28px; }
 .hello { position: relative; font: var(--type-display); letter-spacing: var(--track-display); color: var(--muted); text-wrap: pretty; }
 .hello .line { display: block; text-wrap: balance; }
 .hello strong { color: var(--fg); }
