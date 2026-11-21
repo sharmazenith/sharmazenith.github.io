@@ -2,8 +2,8 @@
 // Alternatives: "baithak", "diary", "margins".
 export const SPACE_NAME = "Kalam"
 
-// TODO: confirm. Omaha was assumed. Drives the footer place, temperature and clock.
-export const CITY = { name: "Omaha", lat: 41.26, lon: -95.93, tz: "America/Chicago" }
+// Drives the footer place, temperature and clock.
+export const CITY = { name: "Papillion", lat: 41.1544, lon: -96.042, tz: "America/Chicago" }
 
 // Cloudflare Worker URL that returns { isPlaying, title, artist, url }. See worker/README.md.
 // While empty, the footer says Zenith is not live on Spotify.
