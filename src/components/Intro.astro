@@ -15,25 +15,25 @@ const readHref = latest ? `/kalam/shayari/${latest.id}/` : undefined
     <span class="write">
       <button class="write-btn" id="write" type="button" aria-expanded="false" aria-controls="write-menu">Write to me.</button>
       <div class="menu" id="write-menu" hidden>
-        {SITE.email && <button type="button" id="copy-email" data-email={SITE.email}><span>copy email</span></button>}
-        {SITE.linkedin && <a href={SITE.linkedin} rel="noopener"><span>linkedin</span><span>↗</span></a>}
-        <a href={SITE.github} rel="noopener"><span>github</span><span>↗</span></a>
+        {SITE.email && <button type="button" id="copy-email" data-email={SITE.email}><span>Copy email</span></button>}
+        {SITE.linkedin && <a href={SITE.linkedin} rel="noopener"><span>LinkedIn</span><span>↗</span></a>}
+        <a href={SITE.github} rel="noopener"><span>GitHub</span><span>↗</span></a>
       </div>
       <div class="toast" id="toast" role="status" hidden></div>
     </span>
   </div>
-  <p class="status"><span class="mark" aria-hidden="true"></span>open to new work</p>
+  <p class="status"><span class="mark" aria-hidden="true"></span>Open to new work</p>
   <div class="links">
-    {SITE.resumePdf && <a href={SITE.resumePdf}><span>résumé, one page</span><span class="arr">↓</span></a>}
-    <a href={SITE.github} rel="noopener"><span>github</span><span class="arr">↗</span></a>
-    {SITE.linkedin && <a href={SITE.linkedin} rel="noopener"><span>linkedin</span><span class="arr">↗</span></a>}
+    {SITE.resumePdf && <a href={SITE.resumePdf}><span>Résumé, one page</span><span class="arr">↓</span></a>}
+    <a href={SITE.github} rel="noopener"><span>GitHub</span><span class="arr">↗</span></a>
+    {SITE.linkedin && <a href={SITE.linkedin} rel="noopener"><span>LinkedIn</span><span class="arr">↗</span></a>}
   </div>
   <div class="latest">
-    <div class="cap">last written</div>
+    <div class="cap">Last written</div>
     {latest ? (<>
       <div lang={lang} dir={lang === "ur" ? "rtl" : undefined}>{lines.map((l) => <div class="ln">{l.text}</div>)}</div>
-      <a class="more" href={readHref}>read →</a>
-    </>) : <p class="empty">nothing here yet.</p>}
+      <a class="more" href={readHref}>Read →</a>
+    </>) : <p class="empty">Nothing here yet.</p>}
   </div>
 </div>
 </aside>

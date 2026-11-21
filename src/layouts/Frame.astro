@@ -56,7 +56,7 @@ const pageTitle = title ?? SITE.name
           </nav>
         </div>
         <nav class="nav" id="nav" aria-label="main">
-          <a href="/" data-section="home" aria-current={section === "home" ? "page" : undefined}>home</a>
+          <a href="/" data-section="home" aria-current={section === "home" ? "page" : undefined}>Home</a>
           <a href="/kalam/" data-section="space" aria-current={section === "space" ? "page" : undefined}>{SPACE_NAME}</a>
           <button class="theme" id="theme" type="button" aria-label="switch theme">
             <svg viewBox="0 0 16 16" aria-hidden="true">
@@ -91,13 +91,13 @@ const pageTitle = title ?? SITE.name
         </div>
         <div class="np" id="np" data-state="idle">
           <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span class="np-win"><span class="np-track" id="np-track">not playing</span></span>
+          <span class="np-win"><span class="np-track" id="np-track">Not playing</span></span>
         </div>
         <nav class="elsewhere" aria-label="elsewhere">
-          <a href={SITE.github} rel="noopener">github</a>
-          {SITE.linkedin && <a href={SITE.linkedin} rel="noopener">linkedin</a>}
+          <a href={SITE.github} rel="noopener">GitHub</a>
+          {SITE.linkedin && <a href={SITE.linkedin} rel="noopener">LinkedIn</a>}
           {SITE.email && <a href={`mailto:${SITE.email}`}>email</a>}
-          <button id="sound" type="button" aria-pressed="true">sound on</button>
+          <button id="sound" type="button" aria-pressed="true">Sound on</button>
         </nav>
       </div>
     </footer>

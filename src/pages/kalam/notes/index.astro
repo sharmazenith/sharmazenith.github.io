@@ -7,7 +7,7 @@ import { allShayari, allNotes } from "../../../lib/content"
 
 const [shayari, notes] = await Promise.all([allShayari(), allNotes()])
 ---
-<Frame section="space" title={`${SPACE_NAME} · ${SITE.name}`} crumbs={[{ label: SPACE_NAME, href: "/kalam/" }, { label: "notes", href: "/kalam/notes/" }]}>
+<Frame section="space" title={`${SPACE_NAME} · ${SITE.name}`} crumbs={[{ label: SPACE_NAME, href: "/kalam/" }, { label: "Notes", href: "/kalam/notes/" }]}>
   <p class="lead" style="margin-top:0">Shayari, mostly written late. Notes on data, books, and whatever stayed with me.</p>
   <Tabs active="notes" shayari={shayari.length} notes={notes.length} />
   <div id="list"><NotesList items={notes} /></div>

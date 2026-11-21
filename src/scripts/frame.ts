@@ -160,8 +160,8 @@ function say(text: string) {
 document.getElementById("copy-email")?.addEventListener("click", async (e) => {
   const email = (e.currentTarget as HTMLElement).dataset.email ?? ""
   setMenu(false)
-  try { await navigator.clipboard.writeText(email); say("copied") }
-  catch { say(`couldn't copy. the email is ${email}`) }
+  try { await navigator.clipboard.writeText(email); say("Copied") }
+  catch { say(`Couldn't copy. The email is ${email}`) }
 })
 
 /* first placement without animation, then keep it right on resize and font load */

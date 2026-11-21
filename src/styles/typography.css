@@ -56,8 +56,11 @@
 html { font-synthesis: none; }
 b, strong, h1, h2, h3, h4, h5, h6, th { font-weight: 500; }
 
-/* Small token: uppercase, tracked. Applied here so the stored text stays in normal case. */
-.cap, .meta, .rmeta, .sort, .t-small {
+/* Small token: uppercase, tracked. It sets interface labels (nav, section headings, tabs, footer,
+   link rows, meta). Anything read as writing stays in sentence case at Body or Section.
+   Applied here so the stored text stays in normal case and can be changed in one place. */
+.nav a, .nav button, .crumbs, .sec, .tabs .tab, .tabs .sort, .links a, .status, .cap, .meta, .rmeta,
+.kv dt, .empty, .back, .pager, .latest .more, .foot, .t-small {
   font: var(--type-small);
   text-transform: uppercase;
   letter-spacing: var(--track-small);

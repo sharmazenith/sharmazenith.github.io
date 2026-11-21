@@ -1,9 +1,9 @@
 // Single place to rename the section. Every label, link and title reads from here.
 // Alternatives: "baithak", "diary", "margins".
-export const SPACE_NAME = "kalam"
+export const SPACE_NAME = "Kalam"
 
 // TODO: confirm. Omaha was assumed. Drives the footer place, temperature and clock.
-export const CITY = { name: "omaha", lat: 41.26, lon: -95.93, tz: "America/Chicago" }
+export const CITY = { name: "Omaha", lat: 41.26, lon: -95.93, tz: "America/Chicago" }
 
 // Cloudflare Worker URL that returns { isPlaying, title, artist, url }. See worker/README.md.
 // While empty, the footer shows NOW_PLAYING_MOCK.

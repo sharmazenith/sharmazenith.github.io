@@ -16,15 +16,15 @@ const { Content } = await render(entry)
 const { title, date, lang, excerpt } = entry.data
 ---
 <Frame section="space" title={`${title} · ${SITE.name}`} description={excerpt}
-  crumbs={[{ label: SPACE_NAME, href: "/kalam/" }, { label: "notes", href: "/kalam/notes/" }]}>
+  crumbs={[{ label: SPACE_NAME, href: "/kalam/" }, { label: "Notes", href: "/kalam/notes/" }]}>
   <article class="reader" lang={lang} dir={lang === "ur" ? "rtl" : undefined}>
-    <a class="back" href="/kalam/notes/">← notes</a>
+    <a class="back" href="/kalam/notes/">← Notes</a>
     <h1>{title}</h1>
     <p class="rmeta">{fmtDay(date)} · {readingTime(entry.body)}</p>
     <div class="body-text"><Content /></div>
     <nav class="pager" aria-label="more notes">
-      {older ? <a href={`/kalam/notes/${older.id}/`}>older</a> : <span></span>}
-      {newer ? <a href={`/kalam/notes/${newer.id}/`}>newer</a> : <span></span>}
+      {older ? <a href={`/kalam/notes/${older.id}/`}>Older</a> : <span></span>}
+      {newer ? <a href={`/kalam/notes/${newer.id}/`}>Newer</a> : <span></span>}
     </nav>
   </article>
 </Frame>

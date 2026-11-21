@@ -5,12 +5,12 @@ const footer = document.querySelector<HTMLElement>(".footer")!
 const reduced = matchMedia("(prefers-reduced-motion: reduce)")
 const { lat, lon, tz, endpoint, mock } = footer.dataset
 
-/* time: 12 hour, lowercase am/pm, updated on the minute boundary */
+/* time: 12 hour, am/pm in capitals, updated on the minute boundary */
 const timeEl = document.getElementById("time")!
 const fmt = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: tz })
 let clockTimer = 0
 function clock() {
-  timeEl.textContent = fmt.format(new Date()).toLowerCase()
+  timeEl.textContent = fmt.format(new Date())
   clearTimeout(clockTimer)
   clockTimer = window.setTimeout(clock, 60000 - (Date.now() % 60000) + 250)
 }
@@ -50,7 +50,7 @@ let shown = ""
 
 function render(p: Playing | null) {
   const playing = !!(p && p.isPlaying && p.title)
-  const text = playing ? `${p!.title}${p!.artist ? `, ${p!.artist}` : ""}` : "not playing"
+  const text = playing ? `${p!.title}${p!.artist ? ` · ${p!.artist}` : ""}` : "Not playing"
   const key = `${playing}|${text}|${p?.url ?? ""}`
   if (key === shown) return
   shown = key

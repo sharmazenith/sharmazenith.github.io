@@ -5,10 +5,10 @@ import { about, work, before, built, tools, school } from "../data/resume"
 const rows = before
 ---
 <Frame section="home">
-  <h2 class="sec">in short</h2>
+  <h2 class="sec">In short</h2>
   <p class="lead">{about}</p>
 
-  <h2 class="sec">work</h2>
+  <h2 class="sec">Work</h2>
   <div class="row">
     <span class="when">{work.when}</span>
     <div class="what">{work.title}<ul>{work.bullets.map((b) => <li>{b}</li>)}</ul></div>
@@ -17,7 +17,7 @@ const rows = before
 
   <h2 class="sec bare">
     <button class="sec-btn" type="button" id="before-btn" aria-expanded="false" aria-controls="before">
-      <span>before that ({rows.length})</span>
+      <span>Before that ({rows.length})</span>
       <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><polyline points="1.5,4 6,8.5 10.5,4" /></svg>
     </button>
   </h2>
@@ -33,7 +33,7 @@ const rows = before
     </div>
   </div>
 
-  <h2 class="sec">things I've built</h2>
+  <h2 class="sec">Things I've built</h2>
   <div class="plist">
     {built.map((p) => {
       const Tag = p.href ? "a" : "div"
@@ -47,10 +47,10 @@ const rows = before
     })}
   </div>
 
-  <h2 class="sec">tools I reach for</h2>
+  <h2 class="sec">Tools I reach for</h2>
   <dl>{tools.map((t) => <div class="kv"><dt>{t.label}</dt><dd>{t.items}</dd></div>)}</dl>
 
-  <h2 class="sec">school</h2>
+  <h2 class="sec">School</h2>
   {school.map((s) => (
     <div class="row">
       <span class="when">{s.when}</span>

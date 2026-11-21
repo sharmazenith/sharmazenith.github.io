@@ -95,7 +95,7 @@ document.addEventListener("pointerdown", (e) => {
 const toggle = document.getElementById("sound") as HTMLButtonElement | null
 function paint() {
   if (!toggle) return
-  toggle.textContent = on ? "sound on" : "sound off"
+  toggle.textContent = on ? "Sound on" : "Sound off"
   toggle.setAttribute("aria-pressed", String(on))
 }
 paint()

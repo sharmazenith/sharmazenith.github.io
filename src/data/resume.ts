@@ -26,9 +26,9 @@ export const built: Project[] = [
 ]
 
 export const tools: { label: string; items: string }[] = [
-  { label: "languages", items: "TODO" },
-  { label: "data", items: "TODO" },
-  { label: "cloud", items: "TODO" },
+  { label: "Languages", items: "TODO" },
+  { label: "Data", items: "TODO" },
+  { label: "Cloud", items: "TODO" },
 ]
 
 export const school: { when: string; title: string; where: string }[] = [

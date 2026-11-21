@@ -13,17 +13,17 @@ export async function getStaticPaths() {
 }
 const { entry, newer, older } = Astro.props
 const lines = toLines(entry.body)
-const label = entry.data.title ?? lines.find((l) => !l.gap)?.text ?? "shayari"
+const label = entry.data.title ?? lines.find((l) => !l.gap)?.text ?? "Shayari"
 ---
 <Frame section="space" title={`${label} · ${SITE.name}`} description={entry.data.excerpt}
-  crumbs={[{ label: SPACE_NAME, href: "/kalam/" }, { label: "shayari", href: "/kalam/" }]}>
+  crumbs={[{ label: SPACE_NAME, href: "/kalam/" }, { label: "Shayari", href: "/kalam/" }]}>
   <article class="reader">
-    <a class="back" href="/kalam/">← shayari</a>
+    <a class="back" href="/kalam/">← Shayari</a>
     <Lines class="couplet" lines={lines} lang={entry.data.lang} />
     <p class="rmeta">{entry.data.form}, {fmtMonth(entry.data.date)}</p>
     <nav class="pager" aria-label="more shayari">
-      {older ? <a href={`/kalam/shayari/${older.id}/`}>older</a> : <span></span>}
-      {newer ? <a href={`/kalam/shayari/${newer.id}/`}>newer</a> : <span></span>}
+      {older ? <a href={`/kalam/shayari/${older.id}/`}>Older</a> : <span></span>}
+      {newer ? <a href={`/kalam/shayari/${newer.id}/`}>Newer</a> : <span></span>}
     </nav>
   </article>
 </Frame>
