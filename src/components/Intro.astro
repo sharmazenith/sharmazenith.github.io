@@ -44,6 +44,8 @@ const readHref = latest ? `/kalam/shayari/${latest.id}/` : undefined
       <span class="np-label" id="np-label" aria-live="polite">Zenith is not live on Spotify right now</span>
     </a>
     <div class="np-win" hidden><div class="np-track" id="np-track"></div></div>
+    <button class="np-listen" id="np-listen" type="button" aria-expanded="false" aria-controls="np-embed" hidden>Listen along</button>
+    <div class="np-embed" id="np-embed" hidden></div>
   </div>
 </div>
 </aside>

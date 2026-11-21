@@ -125,6 +125,11 @@ ul { list-style: none; }
 .np[data-state="playing"] .np-label { color: var(--fg); }
 .np-win { margin-top: 8px; overflow: hidden; white-space: nowrap; color: var(--fg); -webkit-mask-image: linear-gradient(90deg, transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(90deg, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
 .np-win[hidden] { display: none; }
+.np-listen { display: block; margin-top: 14px; color: var(--muted); transition: color .2s var(--ease); }
+.np-listen:hover { color: var(--fg); }
+.np-listen[hidden], .np-embed[hidden] { display: none; }
+.np-embed { margin-top: 12px; }
+.np-embed iframe { display: block; width: 100%; height: 80px; border: 0; color-scheme: normal; }
 .np-track { display: inline-flex; animation: marquee var(--dur, 14s) linear infinite; will-change: transform; }
 .np-item { flex: none; padding-right: 56px; color: inherit; }
 @keyframes marquee { to { transform: translateX(calc(-1 * var(--shift, 0px))); } }

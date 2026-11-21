@@ -51,6 +51,26 @@ const npLabel = document.getElementById("np-label")!
 const win = np.querySelector<HTMLElement>(".np-win")!
 const track = document.getElementById("np-track")!
 const vinyl = createVinyl(document.getElementById("np-vinyl")!)
+const listen = document.getElementById("np-listen") as HTMLButtonElement
+const embed = document.getElementById("np-embed")!
+let trackId = ""
+
+/* Listen along: Spotify's own player, loaded only when asked (a full song for logged in listeners, a preview for everyone else) */
+function setPlayer(open: boolean) {
+  listen.setAttribute("aria-expanded", String(open))
+  listen.textContent = open ? "Close player" : "Listen along"
+  embed.hidden = !open
+  embed.textContent = ""
+  if (!open || !trackId) return
+  const dark = (document.documentElement.getAttribute("data-theme") ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark"
+  const f = document.createElement("iframe")
+  f.src = `https://open.spotify.com/embed/track/${trackId}${dark ? "?theme=0" : ""}`
+  f.title = "Spotify player"
+  f.allow = "encrypted-media; clipboard-write"
+  f.loading = "lazy"
+  embed.append(f)
+}
+listen.addEventListener("click", () => setPlayer(embed.hidden === true))
 let shown = ""
 
 function render(p: Playing | null) {
@@ -63,6 +83,9 @@ function render(p: Playing | null) {
   np.dataset.state = playing ? "playing" : "idle"
   npLabel.textContent = playing ? "Live on Spotify" : IDLE_TEXT
   win.hidden = !playing
+  trackId = playing ? (/^https:\/\/open\.spotify\.com\/track\/([A-Za-z0-9]+)/.exec(p!.url ?? "")?.[1] ?? "") : ""
+  listen.hidden = !trackId
+  if (!embed.hidden) setPlayer(!!trackId) // the song changed: reload the player, or close it if nothing is playing
   vinyl.setState(playing ? "speaking" : "idle")
   vinyl.setCover(art || null)
   track.textContent = ""
