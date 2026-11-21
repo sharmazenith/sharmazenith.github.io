@@ -7,6 +7,16 @@ import "./footer"
 const root = document.documentElement
 const pane = document.getElementById("pane") as HTMLElement
 const reduced = matchMedia("(prefers-reduced-motion: reduce)")
+
+/* a tall intro panel sticks by its bottom edge instead, so nothing in it is ever cut off */
+const intro = document.querySelector<HTMLElement>(".intro")
+const header = document.querySelector<HTMLElement>(".header")
+if (intro && header) {
+  const place = () => { intro.style.top = `${Math.min(header.offsetHeight, innerHeight - intro.offsetHeight)}px` }
+  new ResizeObserver(place).observe(intro)
+  addEventListener("resize", place)
+  place()
+}
 const pages = new Map<string, Document>()
 let token = 0
 

@@ -1,5 +1,6 @@
 ---
 import { SITE } from "../config"
+import profile from "../assets/profile.jpg"
 import { allShayari, toLines } from "../lib/content"
 
 const latest = (await allShayari())[0]
@@ -9,9 +10,9 @@ const readHref = latest ? `/kalam/shayari/${latest.id}/` : undefined
 ---
 <aside class="aside" aria-label="about me">
 <div class="intro">
-  <div class="avatar" aria-hidden="true">ZS</div>
+  <img class="avatar" src={profile.src} width="72" height="72" alt="Zenith Sharma" decoding="async" />
   <div class="hello">
-    <strong class="line">By day, I'm a data engineer at {SITE.employer}.</strong>
+    <strong class="line">By day, I'm a data engineer.</strong>
     <span class="line">By night, I write here.</span>
     <span class="write">
       <button class="write-btn" id="write" type="button" aria-expanded="false" aria-controls="write-menu">Write to me.</button>
@@ -37,14 +38,12 @@ const readHref = latest ? `/kalam/shayari/${latest.id}/` : undefined
     </>) : <p class="empty">Nothing here yet.</p>}
   </div>
   <div class="np" id="np" data-state="idle">
-    <a class="np-cover" id="np-cover" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true" hidden><img alt="" width="72" height="72" decoding="async" /></a>
-    <div class="np-body">
+    <div class="np-vinyl" id="np-vinyl" aria-hidden="true"></div>
     <div class="np-head">
-      <svg class="sp" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.01 2.019c-5.495 0-9.991 4.496-9.991 9.991 0 5.494 4.496 9.99 9.991 9.99 5.494 0 9.99-4.496 9.99-9.99 0-5.495-4.446-9.991-9.99-9.991zm4.595 14.436c-.199.299-.549.4-.85.201-2.349-1.45-5.296-1.75-8.793-.951-.348.102-.648-.148-.748-.449-.101-.35.149-.648.45-.749 3.795-.85 7.093-.499 9.69 1.1.35.149.4.548.251.848zm1.2-2.747c-.251.349-.7.499-1.051.249-2.697-1.646-6.792-2.148-9.939-1.148-.398.101-.85-.1-.949-.498-.101-.402.1-.852.499-.952 3.646-1.098 8.143-.548 11.239 1.351.3.149.45.648.201.998zm.099-2.799c-3.197-1.897-8.542-2.097-11.59-1.146a.938.938 0 0 1-1.148-.6.937.937 0 0 1 .599-1.151c3.547-1.049 9.392-.85 13.089 1.351.449.249.599.849.349 1.298-.25.35-.849.498-1.299.248z"/></svg>
-      <span class="np-label" id="np-label">Zenith is not live on Spotify right now</span>
+    <svg class="sp" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.01 2.019c-5.495 0-9.991 4.496-9.991 9.991 0 5.494 4.496 9.99 9.991 9.99 5.494 0 9.99-4.496 9.99-9.99 0-5.495-4.446-9.991-9.99-9.991zm4.595 14.436c-.199.299-.549.4-.85.201-2.349-1.45-5.296-1.75-8.793-.951-.348.102-.648-.148-.748-.449-.101-.35.149-.648.45-.749 3.795-.85 7.093-.499 9.69 1.1.35.149.4.548.251.848zm1.2-2.747c-.251.349-.7.499-1.051.249-2.697-1.646-6.792-2.148-9.939-1.148-.398.101-.85-.1-.949-.498-.101-.402.1-.852.499-.952 3.646-1.098 8.143-.548 11.239 1.351.3.149.45.648.201.998zm.099-2.799c-3.197-1.897-8.542-2.097-11.59-1.146a.938.938 0 0 1-1.148-.6.937.937 0 0 1 .599-1.151c3.547-1.049 9.392-.85 13.089 1.351.449.249.599.849.349 1.298-.25.35-.849.498-1.299.248z"/></svg>
+    <span class="np-label" id="np-label" aria-live="polite">Zenith is not live on Spotify right now</span>
     </div>
     <div class="np-win" hidden><div class="np-track" id="np-track"></div></div>
-    </div>
   </div>
 </div>
 </aside>

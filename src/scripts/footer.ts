@@ -1,6 +1,8 @@
 // Footer widgets: place, temperature and time on the left, now playing in the middle.
 // The footer is part of the persistent frame, so this runs once.
 
+import { createVinyl } from "./vinyl"
+
 const footer = document.querySelector<HTMLElement>(".footer")!
 const reduced = matchMedia("(prefers-reduced-motion: reduce)")
 const { lat, lon, tz, endpoint } = footer.dataset
@@ -48,8 +50,7 @@ const np = document.getElementById("np")!
 const npLabel = document.getElementById("np-label")!
 const win = np.querySelector<HTMLElement>(".np-win")!
 const track = document.getElementById("np-track")!
-const cover = document.getElementById("np-cover") as HTMLAnchorElement
-const coverImg = cover.querySelector("img")!
+const vinyl = createVinyl(document.getElementById("np-vinyl")!)
 let shown = ""
 
 function render(p: Playing | null) {
@@ -62,8 +63,8 @@ function render(p: Playing | null) {
   np.dataset.state = playing ? "playing" : "idle"
   npLabel.textContent = playing ? "Live on Spotify" : IDLE_TEXT
   win.hidden = !playing
-  cover.hidden = !art
-  if (art) { coverImg.src = art; if (p!.url && /^https:\/\//.test(p!.url)) cover.href = p!.url } else { coverImg.removeAttribute("src"); cover.removeAttribute("href") }
+  vinyl.setState(playing ? "speaking" : "idle")
+  vinyl.setCover(art || null)
   track.textContent = ""
   track.classList.remove("static")
   track.style.removeProperty("--shift")
