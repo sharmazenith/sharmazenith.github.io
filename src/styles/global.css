@@ -128,8 +128,9 @@ ul { list-style: none; }
 .np-listen { display: block; margin-top: 14px; color: var(--muted); transition: color .2s var(--ease); }
 .np-listen:hover { color: var(--fg); }
 .np-listen[hidden], .np-embed[hidden] { display: none; }
-.np-embed { margin-top: 12px; }
-.np-embed iframe { display: block; width: 100%; height: 80px; border: 0; color-scheme: normal; }
+/* clipped to the player's own corner radius, so no browser can show an opaque patch behind the rounded corners */
+.np-embed { margin-top: 12px; border-radius: 12px; overflow: hidden; background: #1f1f1f; }
+.np-embed iframe { display: block; width: 100%; height: 80px; border: 0; color-scheme: dark; } /* matches the dark card, so no opaque patch shows behind its rounded corners */
 .np-track { display: inline-flex; animation: marquee var(--dur, 14s) linear infinite; will-change: transform; }
 .np-item { flex: none; padding-right: 56px; color: inherit; }
 @keyframes marquee { to { transform: translateX(calc(-1 * var(--shift, 0px))); } }

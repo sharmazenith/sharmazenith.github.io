@@ -62,9 +62,8 @@ function setPlayer(open: boolean) {
   embed.hidden = !open
   embed.textContent = ""
   if (!open || !trackId) return
-  const dark = (document.documentElement.getAttribute("data-theme") ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark"
   const f = document.createElement("iframe")
-  f.src = `https://open.spotify.com/embed/track/${trackId}${dark ? "?theme=0" : ""}`
+  f.src = `https://open.spotify.com/embed/track/${trackId}?theme=0` // the dark card in both themes: neutral, not tinted by the album
   f.title = "Spotify player"
   f.allow = "encrypted-media; clipboard-write"
   f.loading = "lazy"
