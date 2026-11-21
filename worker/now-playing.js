@@ -20,10 +20,9 @@ export default {
     if (request.method !== "GET") return new Response("method not allowed", { status: 405, headers })
 
     try {
-      if (Date.now() - memo.at < 4000) return json(memo.data, headers)
-      const data = await current(env)
-      memo = { at: Date.now(), data }
-      return json(data, headers)
+      if (Date.now() - memo.at >= 4000) memo = { at: Date.now(), data: await current(env) }
+      // ageMs lets the page keep the position moving between checks
+      return json(memo.data.isPlaying ? { ...memo.data, ageMs: Date.now() - memo.at } : memo.data, headers)
     } catch {
       return json(IDLE, headers) // never leak errors to the page
     }
@@ -44,6 +43,8 @@ async function current(env) {
     artist: data.item.artists.map((a) => a.name).join(", "),
     url: data.item.external_urls?.spotify ?? "",
     cover: cover(data.item.album?.images),
+    progressMs: data.progress_ms ?? 0,
+    durationMs: data.item.duration_ms ?? 0,
   }
 }
 
