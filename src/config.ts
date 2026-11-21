@@ -7,7 +7,7 @@ export const CITY = { name: "Papillion", lat: 41.1544, lon: -96.042, tz: "Americ
 
 // Cloudflare Worker URL that returns { isPlaying, title, artist, url }. See worker/README.md.
 // While empty, the footer says Zenith is not live on Spotify.
-export const NOW_PLAYING_ENDPOINT = ""
+export const NOW_PLAYING_ENDPOINT = "https://now-playing.znthshrm.workers.dev"
 
 export const SITE = {
   name: "Zenith Sharma",
