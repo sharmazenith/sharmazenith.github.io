@@ -9,7 +9,8 @@ It shows what is playing. It cannot play audio on the site.
 
 1. **Spotify app.** At https://developer.spotify.com/dashboard create an app. Set the redirect URI to
    `http://127.0.0.1:8888/callback` and tick "Web API". Copy the Client ID and Client secret.
-2. **Refresh token, once.** Open this in a browser while logged in to Spotify, with your Client ID
+2. **Refresh token, once.** Easiest: run `zsh worker/get-token.zsh` in your own terminal. It does the
+   steps below and copies the token to your clipboard. Or by hand: Open this in a browser while logged in to Spotify, with your Client ID
    in place of `CLIENT_ID`:
 
    `https://accounts.spotify.com/authorize?client_id=CLIENT_ID&response_type=code&redirect_uri=http%3A%2F%2F127.0.0.1%3A8888%2Fcallback&scope=user-read-currently-playing`
