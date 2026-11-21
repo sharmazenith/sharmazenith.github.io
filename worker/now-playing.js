@@ -5,13 +5,14 @@
 
 const ORIGIN = "https://sharmazenith.github.io"
 const IDLE = { isPlaying: false }
+let memo = { at: 0, data: IDLE } // one answer shared by every visitor for a few seconds
 
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin")
     const headers = {
       "content-type": "application/json",
-      "cache-control": "public, max-age=15",
+      "cache-control": "no-store",
       "access-control-allow-origin": origin === ORIGIN || origin === "http://localhost:3000" ? origin : ORIGIN,
       vary: "Origin",
     }
@@ -19,26 +20,37 @@ export default {
     if (request.method !== "GET") return new Response("method not allowed", { status: 405, headers })
 
     try {
-      const token = await accessToken(env)
-      const res = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
-        headers: { authorization: `Bearer ${token}` },
-      })
-      if (res.status === 204 || res.status > 400) return json(IDLE, headers)
-      const data = await res.json()
-      if (!data.is_playing || data.currently_playing_type !== "track" || !data.item) return json(IDLE, headers)
-      return json(
-        {
-          isPlaying: true,
-          title: data.item.name,
-          artist: data.item.artists.map((a) => a.name).join(", "),
-          url: data.item.external_urls?.spotify ?? "",
-        },
-        headers,
-      )
+      if (Date.now() - memo.at < 4000) return json(memo.data, headers)
+      const data = await current(env)
+      memo = { at: Date.now(), data }
+      return json(data, headers)
     } catch {
       return json(IDLE, headers) // never leak errors to the page
     }
   },
+}
+
+async function current(env) {
+  const token = await accessToken(env)
+  const res = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+    headers: { authorization: `Bearer ${token}` },
+  })
+  if (res.status === 204 || res.status > 400) return IDLE
+  const data = await res.json()
+  if (!data.is_playing || data.currently_playing_type !== "track" || !data.item) return IDLE
+  return {
+    isPlaying: true,
+    title: data.item.name,
+    artist: data.item.artists.map((a) => a.name).join(", "),
+    url: data.item.external_urls?.spotify ?? "",
+    cover: cover(data.item.album?.images),
+  }
+}
+
+// the smallest image that is still sharp at 72px on a retina screen
+function cover(images = []) {
+  const sized = images.filter((i) => i.url?.startsWith("https://i.scdn.co/")).sort((a, b) => a.width - b.width)
+  return (sized.find((i) => i.width >= 144) ?? sized[sized.length - 1])?.url ?? ""
 }
 
 const json = (body, headers) => new Response(JSON.stringify(body), { headers })

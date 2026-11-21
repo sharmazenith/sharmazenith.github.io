@@ -41,50 +41,55 @@ async function temperature() {
   } catch { showTemp(null) }
 }
 
-/* now playing */
-interface Playing { isPlaying: boolean; title?: string; artist?: string; url?: string }
+/* now playing: the whole title runs as a ticker, faded at both edges (mask in CSS) */
+interface Playing { isPlaying: boolean; title?: string; artist?: string; url?: string; cover?: string }
+const IDLE_TEXT = "Zenith is not live on Spotify right now"
 const np = document.getElementById("np")!
+const npLabel = document.getElementById("np-label")!
 const win = np.querySelector<HTMLElement>(".np-win")!
 const track = document.getElementById("np-track")!
+const cover = document.getElementById("np-cover") as HTMLAnchorElement
+const coverImg = cover.querySelector("img")!
 let shown = ""
 
 function render(p: Playing | null) {
   const playing = !!(p && p.isPlaying && p.title)
-  const text = playing ? `${p!.title}${p!.artist ? ` · ${p!.artist}` : ""}` : "Zenith is not live on Spotify right now"
-  const key = `${playing}|${text}|${p?.url ?? ""}`
+  const text = playing ? `${p!.title}${p!.artist ? ` · ${p!.artist}` : ""}` : ""
+  const art = playing && /^https:\/\/i\.scdn\.co\//.test(p!.cover ?? "") ? p!.cover! : ""
+  const key = `${playing}|${text}|${p?.url ?? ""}|${art}`
   if (key === shown) return
   shown = key
   np.dataset.state = playing ? "playing" : "idle"
-  win.classList.remove("run")
-  track.style.removeProperty("--shift")
+  npLabel.textContent = playing ? "Live on Spotify" : IDLE_TEXT
+  win.hidden = !playing
+  cover.hidden = !art
+  if (art) { coverImg.src = art; if (p!.url && /^https:\/\//.test(p!.url)) cover.href = p!.url } else { coverImg.removeAttribute("src"); cover.removeAttribute("href") }
   track.textContent = ""
-  const label = () => {
-    if (playing && p!.url && /^https:\/\//.test(p!.url)) {
-      const a = document.createElement("a")
-      a.href = p!.url
-      a.target = "_blank"
-      a.rel = "noopener"
-      a.textContent = text
-      return a
-    }
-    const s = document.createElement("span")
-    s.textContent = text
-    return s
+  track.classList.remove("static")
+  track.style.removeProperty("--shift")
+  if (!playing) return
+  const item = () => {
+    const link = !!p!.url && /^https:\/\//.test(p!.url)
+    const el = document.createElement(link ? "a" : "span")
+    el.className = "np-item"
+    el.textContent = text
+    if (link) { const a = el as HTMLAnchorElement; a.href = p!.url!; a.target = "_blank"; a.rel = "noopener" }
+    return el
   }
-  track.append(label())
-  if (reduced.matches) return // static, truncated by CSS
+  track.append(item())
+  if (reduced.matches) { track.classList.add("static"); return } // still, truncated by CSS
   requestAnimationFrame(() => {
-    if (track.scrollWidth <= win.clientWidth) return
-    const gap = document.createElement("span")
-    gap.className = "np-gap"
-    gap.setAttribute("aria-hidden", "true")
-    const copy = label()
-    copy.setAttribute("aria-hidden", "true")
-    copy.setAttribute("tabindex", "-1")
-    const first = track.firstElementChild as HTMLElement
-    track.style.setProperty("--shift", `${first.offsetWidth + 40}px`)
-    track.append(gap, copy)
-    win.classList.add("run")
+    const unit = (track.firstElementChild as HTMLElement).offsetWidth
+    if (!unit) return
+    // enough copies that the strip always covers the window, so the loop has no gap
+    for (let i = 1; i < Math.ceil(win.clientWidth / unit) + 1; i++) {
+      const copy = item()
+      copy.setAttribute("aria-hidden", "true")
+      copy.setAttribute("tabindex", "-1")
+      track.append(copy)
+    }
+    track.style.setProperty("--shift", `${unit}px`)
+    track.style.setProperty("--dur", `${Math.max(8, unit / 45)}s`) // steady speed, about 45px a second
   })
 }
 
@@ -105,7 +110,7 @@ let npTimer = 0
 function pollNowPlaying() {
   clearInterval(npTimer)
   void nowPlaying()
-  npTimer = window.setInterval(() => { if (!document.hidden) void nowPlaying() }, 30000)
+  npTimer = window.setInterval(() => { if (!document.hidden) void nowPlaying() }, 5000)
 }
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) return
