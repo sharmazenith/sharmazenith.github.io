@@ -1,61 +1,36 @@
 ---
-import Frame from "../layouts/Frame.astro"
-import { about, work, before, built, tools, school } from "../data/resume"
-
-const rows = before
+import Shell from "../layouts/Shell.astro"
+import Entries from "../components/Entries.astro"
+import { intro, work, built, tools, school } from "../lib/home"
 ---
-<Frame section="home">
-  <h2 class="sec">in short</h2>
-  <p class="lead">{about}</p>
+<Shell section="home">
+  {intro.length > 0 && (<>
+    <h2 class="sec" id="intro"><span>Intro</span></h2>
+    {intro.map((p) => <p class="lead">{p}</p>)}
+  </>)}
 
-  <h2 class="sec">work</h2>
-  <div class="row">
-    <span class="when">{work.when}</span>
-    <div class="what">{work.title}<ul>{work.bullets.map((b) => <li>{b}</li>)}</ul></div>
-    <span class="where">{work.company}<br />{work.city}</span>
-  </div>
+  <Entries heading="Work" sid="work" id="work-before" entries={work} />
 
-  <h2 class="sec bare">
-    <button class="sec-btn" type="button" id="before-btn" aria-expanded="false" aria-controls="before">
-      <span>before that ({rows.length})</span>
-      <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><polyline points="1.5,4 6,8.5 10.5,4" /></svg>
-    </button>
-  </h2>
-  <div class="fold" id="before" data-open="false">
-    <div class="fold-in">
-      {rows.map((r, i) => (
-        <div class="row" style={`--i:${i}`}>
-          <span class="when">{r.when}</span>
-          <div class="what">{r.title}<ul>{r.bullets.map((b) => <li>{b}</li>)}</ul></div>
-          <span class="where">{r.company}<br />{r.city}</span>
-        </div>
-      ))}
+  {built.length > 0 && (<>
+    <h2 class="sec" id="built"><span>Things I've built</span></h2>
+    <div class="plist">
+      {built.map((p) => {
+        const Tag = p.href ? "a" : "div"
+        return (
+          <Tag class="proj" href={p.href} rel={p.href ? "noopener" : undefined}>
+            <span class="name">{p.name}</span>
+            {p.description && <span class="desc">{p.description}</span>}
+            {p.href && <span class="arr">↗</span>}
+          </Tag>
+        )
+      })}
     </div>
-  </div>
+  </>)}
 
-  <h2 class="sec">things I've built</h2>
-  <div class="plist">
-    {built.map((p) => {
-      const Tag = p.href ? "a" : "div"
-      return (
-        <Tag class="proj" href={p.href} rel={p.href ? "noopener" : undefined}>
-          <span class="name">{p.name}<span class="yr">{p.year}</span></span>
-          <span class="desc">{p.description}</span>
-          <span class="arr">↗</span>
-        </Tag>
-      )
-    })}
-  </div>
+  {tools.length > 0 && (<>
+    <h2 class="sec" id="tools"><span>Tools I reach for</span></h2>
+    <dl>{tools.map((t) => <div class="kv"><dt>{t.label}</dt><dd>{t.items.join(" · ")}</dd></div>)}</dl>
+  </>)}
 
-  <h2 class="sec">tools I reach for</h2>
-  <dl>{tools.map((t) => <div class="kv"><dt>{t.label}</dt><dd>{t.items}</dd></div>)}</dl>
-
-  <h2 class="sec">school</h2>
-  {school.map((s) => (
-    <div class="row">
-      <span class="when">{s.when}</span>
-      <div class="what">{s.title}</div>
-      <span class="where">{s.where}</span>
-    </div>
-  ))}
-</Frame>
+  <Entries heading="School" sid="school" id="school-before" entries={school} />
+</Shell>

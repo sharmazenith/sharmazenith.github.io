@@ -1,0 +1,24 @@
+---
+// Where the Worker sends you back after a successful sign-in. The signed token arrives in the URL fragment
+// (never sent to any server), is kept in this browser, and is removed from the address bar straight away.
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Signed in</title>
+  </head>
+  <body>
+    <p>Signed in. Taking you back…</p>
+    <script is:inline>
+      (function () {
+        var m = location.hash.match(/token=([A-Za-z0-9_.-]+)/);
+        if (m) { try { localStorage.setItem("admin-token", m[1]); } catch (e) {} }
+        history.replaceState(null, "", location.pathname);
+        location.replace("/elsewhere/");
+      })();
+    </script>
+  </body>
+</html>

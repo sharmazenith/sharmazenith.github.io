@@ -1,0 +1,17 @@
+---
+// Not linked from anywhere. Open /admin/login directly; it sends you to GitHub through the Worker.
+import { ADMIN_API } from "../../config"
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Signing in</title>
+  </head>
+  <body>
+    <p>Redirecting to GitHub…</p>
+    <script is:inline define:vars={{ api: ADMIN_API }}>location.replace(api + "/login")</script>
+  </body>
+</html>

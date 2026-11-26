@@ -1,0 +1,19 @@
+---
+import Shell from "../../../layouts/Shell.astro"
+import Piece from "../../../components/Piece.astro"
+import { SITE } from "../../../config"
+import { getPieces, labelOf, segOf } from "../../../lib/content"
+
+export async function getStaticPaths() {
+  const all = await getPieces()
+  return all.map((entry) => {
+    const same = all.filter((p) => p.data.type === entry.data.type) // prev and next stay inside the same filter
+    const i = same.indexOf(entry)
+    return { params: { type: segOf(entry.data.type), slug: entry.id }, props: { entry, prev: same[i - 1], next: same[i + 1] } }
+  })
+}
+const { entry, prev, next } = Astro.props
+---
+<Shell section="elsewhere" view="piece" filter={segOf(entry.data.type)} title={`${labelOf(entry)} · ${SITE.name}`} description={entry.data.excerpt}>
+  <Piece entry={entry} prev={prev} next={next} />
+</Shell>

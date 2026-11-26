@@ -1,18 +1,65 @@
-// Persistent frame: header, intro panel and footer are never replaced.
-// Only #pane (or #list inside it, when moving between shayari and notes) changes.
+// Persistent frame. The router keeps the header, left rail, right panel and footer as the same DOM nodes;
+// this module runs once per session. Anything that depends on the current page is refreshed in update().
 
 import "./sound"
 import "./footer"
+import "./nowplaying"
+import "./admin"
 
 const root = document.documentElement
-const pane = document.getElementById("pane") as HTMLElement
 const reduced = matchMedia("(prefers-reduced-motion: reduce)")
-const pages = new Map<string, Document>()
-let token = 0
+const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)
 
-/* underlines that slide along a hairline */
-function place(bar: HTMLElement | null, host: HTMLElement | null, animate: boolean) {
-  if (!bar || !host) return
+/* proof that the frame is never replaced: each persisted node gets a random id once, and it must never change */
+for (const el of document.querySelectorAll("[data-astro-transition-persist]")) {
+  if (!(el as HTMLElement).dataset.mountId) (el as HTMLElement).dataset.mountId = Math.random().toString(36).slice(2, 10)
+}
+
+/* theme */
+const themeBtn = $("#theme") as HTMLButtonElement
+const label = () => themeBtn.setAttribute("aria-label", root.dataset.theme === "dark" ? "switch to light theme" : "switch to dark theme")
+themeBtn.addEventListener("click", () => {
+  const next = root.dataset.theme === "dark" ? "light" : "dark"
+  root.dataset.theme = next
+  try { localStorage.setItem("theme", next) } catch { /* private mode: choice lasts for this visit */ }
+  label()
+})
+
+/* write to me */
+const writeBtn = $("#write") as HTMLButtonElement
+const menu = $("#write-menu") as HTMLElement
+const toast = $("#toast") as HTMLElement
+let toastTimer = 0
+const setMenu = (open: boolean) => { menu.hidden = !open; writeBtn.setAttribute("aria-expanded", String(open)) }
+writeBtn.addEventListener("click", () => { toast.hidden = true; setMenu(menu.hidden === true) })
+document.addEventListener("click", (e) => { if (!menu.hidden && !(e.target as Element).closest(".write")) setMenu(false) })
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !menu.hidden) { setMenu(false); writeBtn.focus() } })
+function say(text: string) {
+  toast.textContent = text
+  toast.hidden = false
+  clearTimeout(toastTimer)
+  toastTimer = window.setTimeout(() => { toast.hidden = true }, 2400)
+}
+document.getElementById("copy-email")?.addEventListener("click", async (e) => {
+  const email = (e.currentTarget as HTMLElement).dataset.email ?? ""
+  setMenu(false)
+  try { await navigator.clipboard.writeText(email); say("Copied") }
+  catch { say(`Couldn't copy. The email is ${email}`) }
+})
+
+/* before that: fold (delegated, because the middle is swapped) */
+document.addEventListener("click", (e) => {
+  const btn = (e.target as Element).closest<HTMLButtonElement>("[data-fold]")
+  if (!btn) return
+  const open = btn.getAttribute("aria-expanded") !== "true"
+  btn.setAttribute("aria-expanded", String(open))
+  document.getElementById(btn.dataset.fold!)?.setAttribute("data-open", String(open))
+})
+
+/* nav underline: slides between the two links */
+function placeBar(animate: boolean) {
+  const bar = document.getElementById("nav-bar") as HTMLElement
+  const host = document.getElementById("nav") as HTMLElement
   const active = host.querySelector<HTMLElement>('[aria-current="page"]')
   if (!active) { bar.style.opacity = "0"; return }
   const h = host.getBoundingClientRect()
@@ -23,147 +70,113 @@ function place(bar: HTMLElement | null, host: HTMLElement | null, animate: boole
   bar.style.opacity = "1"
   if (!animate || reduced.matches) { void bar.offsetWidth; bar.style.transition = "" }
 }
-function placeAll(animate: boolean) {
-  place(document.getElementById("nav-bar"), document.getElementById("nav"), animate)
-  place(document.getElementById("tab-bar"), document.querySelector<HTMLElement>(".tabset"), animate)
+
+/* writing index: the URL is the state. /elsewhere/<type>/... shows that filter; anything else shows All.
+   The rail is persisted, so after each navigation this re-reads the path and updates it in place. */
+const rail = $("#rail") as HTMLElement
+const items = () => [...rail.querySelectorAll<HTMLLIElement>(".plist-rail li")]
+const parts = () => location.pathname.split("/").filter(Boolean)
+function currentFilter() {
+  const [section, seg] = parts()
+  return section === "elsewhere" && ["shayari", "notes", "essays", "quotes"].includes(seg) ? seg : "all"
 }
-
-/* opacity only fades */
-const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, reduced.matches ? 0 : ms))
-async function fade(el: HTMLElement, to: 0 | 1, ms: number) {
-  el.style.transition = reduced.matches ? "none" : `opacity ${ms}ms var(--ease)`
-  el.style.opacity = String(to)
-  await wait(ms)
-}
-
-async function fetchPage(path: string): Promise<Document | null> {
-  const hit = pages.get(path)
-  if (hit) return hit
-  try {
-    const res = await fetch(path, { headers: { accept: "text/html" } })
-    if (!res.ok) return null
-    const doc = new DOMParser().parseFromString(await res.text(), "text/html")
-    pages.set(path, doc)
-    return doc
-  } catch { return null }
-}
-
-async function go(href: string, push: boolean) {
-  const url = new URL(href, location.href)
-  const me = ++token
-  const doc = await fetchPage(url.pathname)
-  if (me !== token) return
-  if (!doc || !doc.getElementById("pane")) { location.href = url.href; return }
-
-  const listOnly = !!(doc.getElementById("tabs") && document.getElementById("tabs") && doc.getElementById("list"))
-  const target = document.getElementById(listOnly ? "list" : "pane") as HTMLElement
-  const incoming = doc.getElementById(listOnly ? "list" : "pane") as HTMLElement
-
-  // keep the list at least as tall as it was, so the page height (and scroll position) cannot change
-  if (listOnly) target.style.minHeight = `${target.offsetHeight}px`
-  await fade(target, 0, 100)
-  if (me !== token) { target.style.opacity = "1"; return }
-
-  target.innerHTML = incoming.innerHTML
-  if (listOnly) {
-    document.querySelectorAll<HTMLAnchorElement>(".tabset .tab").forEach((a) => {
-      const next = doc.querySelector(`.tabset .tab[href="${a.getAttribute("href")}"]`)
-      if (next?.getAttribute("aria-current")) a.setAttribute("aria-current", "page")
-      else a.removeAttribute("aria-current")
-    })
-  } else {
-    pane.dataset.section = doc.getElementById("pane")!.dataset.section ?? "home"
-    window.scrollTo(0, 0) // hidden while the pane is at zero opacity
+function applyFilter() {
+  const filter = currentFilter()
+  let shown = 0
+  for (const li of items()) {
+    const show = filter === "all" || li.dataset.type === filter
+    li.hidden = !show
+    if (show) shown++
   }
-
-  document.title = doc.title
-  const crumbs = document.getElementById("crumbs")
-  const nextCrumbs = doc.getElementById("crumbs")
-  if (crumbs && nextCrumbs) crumbs.innerHTML = nextCrumbs.innerHTML
-  document.querySelectorAll<HTMLAnchorElement>("#nav a[data-section]").forEach((a) => {
-    if (a.dataset.section === pane.dataset.section) a.setAttribute("aria-current", "page")
+  rail.querySelectorAll<HTMLAnchorElement>(".filters a").forEach((a) => {
+    if (a.dataset.filter === filter) a.setAttribute("aria-current", "page")
     else a.removeAttribute("aria-current")
   })
-  if (push) history.pushState(null, "", url.pathname)
-
-  // the nav underline always slides; the tab underline slides only when the tab bar stayed put
-  place(document.getElementById("nav-bar"), document.getElementById("nav"), true)
-  place(document.getElementById("tab-bar"), document.querySelector<HTMLElement>(".tabset"), listOnly)
-  if (!listOnly) pane.focus({ preventScroll: true })
-  await fade(target, 1, 160)
-  target.style.transition = ""
+  rail.querySelector<HTMLElement>(".rail-empty")!.hidden = shown > 0
+}
+function markSelected() {
+  const [section, , slug] = parts()
+  rail.querySelectorAll<HTMLAnchorElement>(".plist-rail a").forEach((a) => {
+    if (section === "elsewhere" && slug && a.dataset.slug === slug) a.setAttribute("aria-current", "page")
+    else a.removeAttribute("aria-current")
+  })
 }
 
+/* script switcher: one choice, remembered, applied to every piece. All variants share one grid cell, so nothing moves. */
+const SCRIPT = "script"
+function applyScript() {
+  let pref = ""
+  try { pref = localStorage.getItem(SCRIPT) ?? "" } catch { /* default to first */ }
+  document.querySelectorAll<HTMLElement>(".piece").forEach((piece) => {
+    const vars = [...piece.querySelectorAll<HTMLElement>(".var")]
+    if (vars.length === 0) return
+    const pick = vars.find((v) => v.dataset.script === pref) ?? vars[0]
+    vars.forEach((v) => v.classList.toggle("on", v === pick))
+    piece.querySelectorAll<HTMLButtonElement>(".switcher button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.script === pick.dataset.script)))
+  })
+}
 document.addEventListener("click", (e) => {
-  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
-  const a = (e.target as Element).closest("a")
-  if (!a || a.target || a.hasAttribute("download") || a.origin !== location.origin) return
-  if (a.pathname === location.pathname && a.hash) return
-  const rel = a.getAttribute("href") ?? ""
-  if (rel.startsWith("#") || /\.[a-z0-9]+$/i.test(a.pathname)) return // in-page anchors and files (pdf) load natively
+  const b = (e.target as Element).closest<HTMLButtonElement>(".switcher button")
+  if (!b) return
+  try { localStorage.setItem(SCRIPT, b.dataset.script!) } catch { /* lasts this visit */ }
+  applyScript()
+})
+
+/* home index: scroll the middle to a section, and highlight the one in view */
+rail.addEventListener("click", (e) => {
+  const a = (e.target as Element).closest<HTMLAnchorElement>("[data-spy]")
+  if (!a) return
   e.preventDefault()
-  if (a.pathname === location.pathname) return
-  void go(a.pathname, true)
+  document.getElementById(a.dataset.spy!)?.scrollIntoView({ behavior: reduced.matches ? "auto" : "smooth", block: "start" })
 })
-addEventListener("popstate", () => void go(location.pathname, false))
-history.scrollRestoration = "manual"
-
-/* signature: once the pen strokes finish, drop the mask so the exact artwork shows */
-if (root.classList.contains("sig-draw")) {
-  const end = Number(document.querySelector<SVGElement>(".sig")?.dataset.end ?? 3.2)
-  setTimeout(() => root.classList.remove("sig-draw"), end * 1000 + 150)
+let spy: IntersectionObserver | undefined
+function watchSections() {
+  spy?.disconnect()
+  const mid = document.getElementById("middle")
+  const heads = [...document.querySelectorAll<HTMLElement>("#pane h2.sec[id]")]
+  if (root.dataset.section !== "home" || !mid || heads.length === 0) return
+  const mark = (id: string) => rail.querySelectorAll<HTMLAnchorElement>("[data-spy]").forEach((a) => (a.dataset.spy === id ? a.setAttribute("aria-current", "true") : a.removeAttribute("aria-current")))
+  const scroller = innerWidth >= 1280 ? mid : null
+  spy = new IntersectionObserver(() => {
+    const top = (scroller ? scroller.getBoundingClientRect().top : 0) + 120
+    let cur = heads[0].id
+    for (const h of heads) if (h.getBoundingClientRect().top <= top) cur = h.id
+    mark(cur)
+  }, { root: scroller, threshold: [0, 1] })
+  heads.forEach((h) => spy!.observe(h))
+  ;(scroller ?? window).addEventListener("scroll", () => spy!.takeRecords(), { passive: true })
+  mark(heads[0].id)
+  const onScroll = () => {
+    const top = (scroller ? scroller.getBoundingClientRect().top : 0) + 120
+    let cur = heads[0].id
+    for (const h of heads) if (h.getBoundingClientRect().top <= top) cur = h.id
+    mark(cur)
+  }
+  ;(scroller ?? window).addEventListener("scroll", onScroll, { passive: true })
 }
 
-/* theme */
-const themeBtn = document.getElementById("theme") as HTMLButtonElement
-const label = () => themeBtn.setAttribute("aria-label", root.dataset.theme === "dark" ? "switch to light theme" : "switch to dark theme")
-label()
-themeBtn.addEventListener("click", () => {
-  const next = root.dataset.theme === "dark" ? "light" : "dark"
-  root.dataset.theme = next
-  try { localStorage.setItem("theme", next) } catch { /* private mode: choice lasts for this visit */ }
+/* everything that depends on the current page */
+function update(animate: boolean) {
+  document.querySelectorAll<HTMLAnchorElement>("#nav a[data-section]").forEach((a) => {
+    if (a.dataset.section === root.dataset.section) a.setAttribute("aria-current", "page")
+    else a.removeAttribute("aria-current")
+  })
   label()
-})
-
-/* before that: fold */
-document.addEventListener("click", (e) => {
-  const btn = (e.target as Element).closest<HTMLButtonElement>("#before-btn")
-  if (!btn) return
-  const open = btn.getAttribute("aria-expanded") !== "true"
-  btn.setAttribute("aria-expanded", String(open))
-  document.getElementById("before")?.setAttribute("data-open", String(open))
-})
-
-/* write to me */
-const writeBtn = document.getElementById("write") as HTMLButtonElement
-const menu = document.getElementById("write-menu") as HTMLElement
-const toast = document.getElementById("toast") as HTMLElement
-let toastTimer = 0
-const setMenu = (open: boolean) => {
-  menu.hidden = !open
-  writeBtn.setAttribute("aria-expanded", String(open))
+  placeBar(animate)
+  applyFilter()
+  markSelected()
+  applyScript()
+  watchSections()
 }
-writeBtn.addEventListener("click", () => { toast.hidden = true; setMenu(menu.hidden === true) })
-document.addEventListener("click", (e) => {
-  if (!menu.hidden && !(e.target as Element).closest(".write")) setMenu(false)
-})
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !menu.hidden) { setMenu(false); writeBtn.focus() }
-})
-function say(text: string) {
-  toast.textContent = text
-  toast.hidden = false
-  clearTimeout(toastTimer)
-  toastTimer = window.setTimeout(() => { toast.hidden = true }, 2400)
-}
-document.getElementById("copy-email")?.addEventListener("click", async (e) => {
-  const email = (e.currentTarget as HTMLElement).dataset.email ?? ""
-  setMenu(false)
-  try { await navigator.clipboard.writeText(email); say("copied") }
-  catch { say(`couldn't copy. the email is ${email}`) }
-})
 
-/* first placement without animation, then keep it right on resize and font load */
-placeAll(false)
-addEventListener("resize", () => placeAll(false))
-document.fonts?.ready.then(() => placeAll(false))
+/* only the middle scrolls, so only the middle is sent back to the top. The window never scrolls on desktop. */
+document.addEventListener("astro:after-swap", () => {
+  const mid = document.getElementById("middle")
+  if (mid) mid.scrollTop = 0
+  applyScript() // before first paint, so a remembered script never flashes the wrong one
+})
+document.addEventListener("astro:page-load", () => update(true))
+
+update(false)
+addEventListener("resize", () => placeBar(false))
+document.fonts?.ready.then(() => placeBar(false))

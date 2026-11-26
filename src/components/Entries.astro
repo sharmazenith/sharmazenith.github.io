@@ -1,0 +1,24 @@
+---
+import type { work } from "../lib/home"
+import Row from "./Row.astro"
+
+/* WORK and SCHOOL share one layout: the newest entry shows, the rest fold under BEFORE THAT. */
+interface Props { heading: string; sid: string; id: string; entries: typeof work }
+const { heading, sid, id, entries } = Astro.props
+const [current, ...older] = entries
+---
+{current && (<>
+  <h2 class="sec" id={sid}><span>{heading}</span></h2>
+  <Row entry={current} />
+  {older.length > 0 && (<>
+    <h2 class="sec bare">
+      <button class="sec-btn" type="button" data-fold={id} aria-expanded="false" aria-controls={id}>
+        <span>Before that ({older.length})</span>
+        <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><polyline points="1.5,4 6,8.5 10.5,4" /></svg>
+      </button>
+    </h2>
+    <div class="fold" id={id} data-open="false">
+      <div class="fold-in">{older.map((e, i) => <Row entry={e} i={i} />)}</div>
+    </div>
+  </>)}
+</>)}

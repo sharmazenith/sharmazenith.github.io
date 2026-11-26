@@ -1,0 +1,100 @@
+---
+// The one shared frame. Header, left rail, right panel and footer are persisted by Astro's client router:
+// the same DOM nodes survive every navigation and are never re-rendered. Only #pane (the middle) changes.
+import { ClientRouter, fade } from "astro:transitions"
+import "../styles/typography.css"
+import "../styles/global.css"
+import Logo from "../components/Logo.astro"
+import Rail from "../components/Rail.astro"
+import Panel from "../components/Panel.astro"
+import fontUrl from "../assets/fonts/neue-montreal-500.woff2?url"
+import { SITE, SECTION, CITY, NOW_PLAYING_ENDPOINT, ADMIN_API } from "../config"
+
+interface Props {
+  title?: string
+  section: "home" | "elsewhere"
+  filter?: "all" | "shayari" | "notes" | "essays" | "quotes" // the writing filter this URL is in
+  view?: "page" | "list" | "piece" // on a phone, "list" shows the writing index as its own screen, "piece" the reading screen
+  description?: string
+}
+const { title, section, filter = "all", view = "page", description = `${SITE.name}: résumé, shayari and notes.` } = Astro.props
+const pageTitle = title ?? SITE.name
+---
+<!doctype html>
+<html lang="en" data-section={section} data-view={view} data-filter={filter}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
+    <meta name="theme-color" content="#89AEE8" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      /* theme: applied before first paint, and again after every client side swap (the swap resets root attributes) */
+      (function () {
+        function apply() {
+          var t = null;
+          try { t = localStorage.getItem("theme"); } catch (e) {}
+          if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", t);
+        }
+        apply();
+        document.addEventListener("astro:after-swap", apply);
+      })();
+    </script>
+    <ClientRouter />
+  </head>
+  <body>
+    <div class="shell" transition:animate="none">
+      <header class="header" transition:persist="site-header"><div class="header-in">
+        <Logo />
+        <nav class="nav" id="nav" aria-label="main">
+          <a href="/" data-section="home">Home</a>
+          <a href={`/${SECTION.slug}/`} data-section="elsewhere">{SECTION.label}</a>
+          <span class="bar" id="nav-bar" aria-hidden="true"></span>
+        </nav>
+        <button class="theme" id="theme" type="button" aria-label="switch theme">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <polygon class="half" points="15.5,0.5 15.5,15.5 0.5,15.5" />
+            <rect x="0.5" y="0.5" width="15" height="15" />
+          </svg>
+        </button>
+      </div></header>
+
+      <div class="cols">
+        <aside class="rail" id="rail" aria-label="index" data-api={ADMIN_API} transition:persist="left-rail"><Rail filter={filter} /></aside>
+        <main class="middle" id="middle">
+          <div class="pane" id="pane" transition:animate={fade({ duration: "150ms" })}>
+            <slot />
+          </div>
+        </main>
+        <aside class="panel" id="panel" aria-label="about me" transition:persist="right-panel"><Panel endpoint={NOW_PLAYING_ENDPOINT} /></aside>
+      </div>
+
+      <footer class="footer" transition:persist="site-footer"
+        data-lat={CITY.lat} data-lon={CITY.lon} data-tz={CITY.tz}>
+        <div class="footer-in">
+        <div class="where tnum" aria-label="where and when">
+          <span>{CITY.name}</span>
+          <i class="dot" id="dot-temp" hidden></i><span id="temp" hidden></span>
+          <i class="dot"></i><span id="time"></span>
+        </div>
+        <nav class="elsewhere" aria-label="elsewhere">
+          <a href={SITE.github} rel="noopener">GitHub</a>
+          {SITE.linkedin && <a href={SITE.linkedin} rel="noopener">LinkedIn</a>}
+          {SITE.email && <a href={`mailto:${SITE.email}`}>email</a>}
+          <button id="sound" type="button" aria-pressed="true">Sound on</button>
+        </nav>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      import "../scripts/frame.ts"
+    </script>
+  </body>
+</html>

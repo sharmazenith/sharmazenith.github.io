@@ -1,0 +1,21 @@
+name = "elsewhere-admin"
+main = "admin.js"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+# Plain variables. Not secret.
+[vars]
+GITHUB_REPO = "sharmazenith/sharmazenith.github.io"
+GITHUB_BRANCH = "main"                          # the branch GitHub Pages deploys from
+ADMIN_GITHUB_LOGIN = "sharmazenith"             # the only GitHub account that can sign in
+GITHUB_OAUTH_CLIENT_ID = "Ov23lij251eRytXJHpoM"
+SITE_ORIGIN = "https://sharmazenith.github.io"
+
+# Optional: a KV namespace makes the 20 publishes per hour limit hold across Cloudflare's servers.
+# Create one with `npx wrangler kv namespace create RATE`, then uncomment and paste the id.
+# [[kv_namespaces]]
+# binding = "RATE"
+# id = "PASTE_ID"
+
+# Secrets are set with `npx wrangler secret put <NAME> -c wrangler.admin.toml`, never written in this file:
+#   GITHUB_TOKEN, GITHUB_OAUTH_CLIENT_SECRET, SESSION_SECRET
