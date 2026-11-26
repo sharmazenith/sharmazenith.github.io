@@ -237,7 +237,8 @@ async function callback(request, env) {
     method: "POST", headers: { accept: "application/json", "content-type": "application/json" },
     body: JSON.stringify({ client_id: env.GITHUB_OAUTH_CLIENT_ID, client_secret: env.GITHUB_OAUTH_CLIENT_SECRET, code: url.searchParams.get("code") }),
   }).then((r) => r.json()).catch(() => ({}))
-  if (!tok.access_token) return new Response("Sign-in failed.", { status: 400 })
+  // GitHub's error code (for example incorrect_client_credentials) says what is wrong and contains no secret
+  if (!tok.access_token) return new Response(`Sign-in failed. GitHub said: ${String(tok.error || "no answer").replace(/[^a-z_]/g, "")}.`, { status: 400 })
   const me = await fetch("https://api.github.com/user", { headers: { authorization: `Bearer ${tok.access_token}`, "user-agent": "elsewhere-admin", accept: "application/vnd.github+json" } }).then((r) => r.json()).catch(() => ({}))
   if (!me.login || me.login.toLowerCase() !== String(env.ADMIN_GITHUB_LOGIN).toLowerCase()) return new Response("Forbidden.", { status: 403 })
   const session = await sign({ login: me.login, exp: Math.floor(Date.now() / 1000) + 30 * DAY }, env.SESSION_SECRET)
