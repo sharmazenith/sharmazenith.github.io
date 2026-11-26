@@ -39,6 +39,20 @@ Publishing commits a file to `src/content/elsewhere/` on `main`; the normal GitH
   meantime you get "This piece changed elsewhere. Reload to get the latest." and nothing is overwritten.
 - In progress writing autosaves in this browser every few seconds and is cleared after a successful publish.
 
+## Translate Roman (optional)
+
+In the editor, type romanized Hindi or Urdu in the **Roman** box and press **Translate Roman**. Claude fills the
+Devanagari box and a plain, unsoftened English translation (same line breaks, no padding). Both are drafts to read and
+fix before publishing. It needs one more secret:
+
+```
+npx wrangler secret put ANTHROPIC_API_KEY -c wrangler.admin.toml
+npx wrangler deploy -c wrangler.admin.toml
+```
+
+The key is from console.anthropic.com. Calls are limited to 60 per hour, require your signed token, and the model and
+the translation rules live in `worker/admin.js` (`MODEL`, `TRANSLATE_SYSTEM`). Change the rules there to change the tone.
+
 ## Security notes
 
 - Every request except sign-in needs a signed, expiring token for the admin account; anything else gets 401.

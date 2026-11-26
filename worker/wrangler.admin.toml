@@ -18,4 +18,4 @@ SITE_ORIGIN = "https://sharmazenith.github.io"
 # id = "PASTE_ID"
 
 # Secrets are set with `npx wrangler secret put <NAME> -c wrangler.admin.toml`, never written in this file:
-#   GITHUB_TOKEN, GITHUB_OAUTH_CLIENT_SECRET, SESSION_SECRET
+#   GITHUB_TOKEN, GITHUB_OAUTH_CLIENT_SECRET, SESSION_SECRET, ANTHROPIC_API_KEY (for Translate Roman)
