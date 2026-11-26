@@ -15,7 +15,7 @@
 //   POST /publish        create a piece (commit)
 //   PUT  /piece          edit a piece; needs the SHA it was loaded with, else 409 "stale"
 //   POST /unpublish      set draft: true; needs the SHA
-//   POST /translate      romanized text in, Devanagari and a plain English translation out (Claude; needs ANTHROPIC_API_KEY)
+//   POST /translate      romanized text in, Devanagari and a plain English translation out (Gemini free tier; needs GEMINI_API_KEY)
 //
 // Why a bearer token and not a cookie: the site (github.io) and this Worker (workers.dev) are different
 // sites, so a SameSite=Strict cookie would never be sent. The token is signed, expires in 30 days, and every
@@ -304,7 +304,8 @@ async function unpublish(input, env, h) {
 }
 
 /* ---------- romanized Hindi/Urdu -> Devanagari + English, in the writer's own voice ---------- */
-const MODEL = "claude-sonnet-5-5"
+// Google Gemini, free tier (key from aistudio.google.com). Change the model with the GEMINI_MODEL variable.
+const DEFAULT_MODEL = "gemini-2.5-flash"
 const TRANSLATE_SYSTEM = `You help a poet publish romanized Hindi and Urdu writing (shayari, notes, quotes).
 Given romanized text, return two things:
 1. "devanagari": the same text spelled in Devanagari, the way a native Hindi writer would spell it (correct matras, nukta only where the word needs it, anusvara and chandrabindu used properly). Do not change, fix or reword the words. Urdu words stay as spoken.
@@ -320,16 +321,24 @@ async function translate(input, env, h) {
   const roman = clean(input?.roman)
   if (!roman) return json({ error: "Write something in the Roman box first." }, 422, h)
   if (roman.length > 4000) return json({ error: "That is too long to translate at once. Do a few couplets at a time." }, 422, h)
-  if (!env.ANTHROPIC_API_KEY) return json({ error: "Translation is not set up yet (missing ANTHROPIC_API_KEY on the Worker)." }, 503, h)
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  if (!env.GEMINI_API_KEY) return json({ error: "Translation is not set up yet (missing GEMINI_API_KEY on the Worker)." }, 503, h)
+  const model = env.GEMINI_MODEL || DEFAULT_MODEL
+  const off = ["HARM_CATEGORY_HARASSMENT", "HARM_CATEGORY_HATE_SPEECH", "HARM_CATEGORY_SEXUALLY_EXPLICIT", "HARM_CATEGORY_DANGEROUS_CONTENT"].map((category) => ({ category, threshold: "BLOCK_NONE" }))
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
     method: "POST",
-    headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 2000, system: TRANSLATE_SYSTEM, messages: [{ role: "user", content: roman }] }),
+    headers: { "x-goog-api-key": env.GEMINI_API_KEY, "content-type": "application/json" }, // header, not URL, so it is never logged
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: TRANSLATE_SYSTEM }] },
+      contents: [{ role: "user", parts: [{ text: roman }] }],
+      generationConfig: { responseMimeType: "application/json", temperature: 0.3, maxOutputTokens: 2000 },
+      safetySettings: off, // poetry can be dark and blunt; do not let a filter silently soften or block it
+    }),
   })
+  if (res.status === 429) return json({ error: "Gemini's free limit was reached for now. Try again in a minute." }, 429, h)
   if (!res.ok) return json({ error: "The translator did not answer. Nothing was changed." }, 502, h)
-  const text = (await res.json()).content?.find((c) => c.type === "text")?.text ?? ""
+  const text = (await res.json()).candidates?.[0]?.content?.parts?.map((x) => x.text ?? "").join("") ?? ""
   let out
   try { out = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)) } catch { out = null }
-  if (!out || typeof out.devanagari !== "string" || typeof out.english !== "string") return json({ error: "The translator's answer was not usable. Try again." }, 502, h)
+  if (!out || typeof out.devanagari !== "string" || typeof out.english !== "string") return json({ error: "The translator's answer was not usable (it may have declined). Try again or edit by hand." }, 502, h)
   return json({ devanagari: clean(out.devanagari), english: clean(out.english) }, 200, h)
 }

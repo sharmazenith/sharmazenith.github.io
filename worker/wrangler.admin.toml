@@ -10,6 +10,7 @@ GITHUB_BRANCH = "main"                          # the branch GitHub Pages deploy
 ADMIN_GITHUB_LOGIN = "sharmazenith"             # the only GitHub account that can sign in
 GITHUB_OAUTH_CLIENT_ID = "Ov23lij251eRytXJHpoM"
 SITE_ORIGIN = "https://sharmazenith.github.io"
+# GEMINI_MODEL = "gemini-2.5-flash"             # optional: change the translation model
 
 # Optional: a KV namespace makes the 20 publishes per hour limit hold across Cloudflare's servers.
 # Create one with `npx wrangler kv namespace create RATE`, then uncomment and paste the id.
@@ -18,4 +19,4 @@ SITE_ORIGIN = "https://sharmazenith.github.io"
 # id = "PASTE_ID"
 
 # Secrets are set with `npx wrangler secret put <NAME> -c wrangler.admin.toml`, never written in this file:
-#   GITHUB_TOKEN, GITHUB_OAUTH_CLIENT_SECRET, SESSION_SECRET, ANTHROPIC_API_KEY (for Translate Roman)
+#   GITHUB_TOKEN, GITHUB_OAUTH_CLIENT_SECRET, SESSION_SECRET, GEMINI_API_KEY (for Translate Roman)

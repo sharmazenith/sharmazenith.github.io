@@ -39,19 +39,21 @@ Publishing commits a file to `src/content/elsewhere/` on `main`; the normal GitH
   meantime you get "This piece changed elsewhere. Reload to get the latest." and nothing is overwritten.
 - In progress writing autosaves in this browser every few seconds and is cleared after a successful publish.
 
-## Translate Roman (optional)
+## Translate Roman (optional, free)
 
-In the editor, type romanized Hindi or Urdu in the **Roman** box and press **Translate Roman**. Claude fills the
+In the editor, type romanized Hindi or Urdu in the **Roman** box and press **Translate Roman**. Google Gemini fills the
 Devanagari box and a plain, unsoftened English translation (same line breaks, no padding). Both are drafts to read and
-fix before publishing. It needs one more secret:
+fix before publishing. It needs one more secret, from the free Gemini tier (no card):
 
 ```
-npx wrangler secret put ANTHROPIC_API_KEY -c wrangler.admin.toml
+# key: https://aistudio.google.com/apikey  (Create API key)
+npx wrangler secret put GEMINI_API_KEY -c wrangler.admin.toml
 npx wrangler deploy -c wrangler.admin.toml
 ```
 
-The key is from console.anthropic.com. Calls are limited to 60 per hour, require your signed token, and the model and
-the translation rules live in `worker/admin.js` (`MODEL`, `TRANSLATE_SYSTEM`). Change the rules there to change the tone.
+Calls need your signed token and are limited to 60 per hour (Gemini's own free daily limit may be lower). The rules
+live in `worker/admin.js` (`TRANSLATE_SYSTEM`); change them to change the tone. Safety filters are turned off for this
+call so dark poetry is not blocked or softened. Free tier note: Google may use free tier inputs to improve its products.
 
 ## Security notes
 
