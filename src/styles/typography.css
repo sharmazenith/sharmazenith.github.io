@@ -6,7 +6,7 @@
 @font-face {
   font-family: "Neue Montreal";
   src: url("../assets/fonts/neue-montreal-500.woff2") format("woff2");
-  font-weight: 400 600; /* one cut, declared as a range so 450 in dark mode resolves to it */
+  font-weight: 500;
   font-style: normal;
   font-display: block; /* preloaded in Frame.astro: no flash of a fallback face */
 }
@@ -68,15 +68,9 @@
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -moz-osx-font-smoothing: grayscale; }
 .when, .rd, .rmeta, .filters a span, .footer, .kv dd, .tnum { font-variant-numeric: tabular-nums; }
 
-/* dark mode: light on dark looks heavier (halation), so body size and up is 450. Small labels stay 500. */
-[data-theme="dark"] body,
-[data-theme="dark"] .lead, [data-theme="dark"] .row, [data-theme="dark"] .proj, [data-theme="dark"] .kv,
-[data-theme="dark"] .name, [data-theme="dark"] .tag, [data-theme="dark"] .write,
-[data-theme="dark"] .ptitle, [data-theme="dark"] .var p, [data-theme="dark"] .body-text,
-[data-theme="dark"] .plist-rail a, [data-theme="dark"] .attr { font-weight: 450; }
-[data-theme="dark"] .nav a, [data-theme="dark"] .theme, [data-theme="dark"] .sec, [data-theme="dark"] .rmeta,
-[data-theme="dark"] .rd, [data-theme="dark"] .filters a, [data-theme="dark"] .footer, [data-theme="dark"] .t-small,
-[data-theme="dark"] .pager, [data-theme="dark"] .back, [data-theme="dark"] .links a, [data-theme="dark"] .kv dt { font-weight: 500; }
+/* dark mode: pure white on near black glares, so reading text uses the secondary light colour;
+   titles, the name and the active nav stay white. (The font is one 500 cut, so weight is not adjusted.) */
+[data-theme="dark"] .var p, [data-theme="dark"] .body-text blockquote { color: var(--soft); }
 
 /* one weight: nothing is bold, nothing is light */
 html { font-synthesis: none; }

@@ -35,13 +35,12 @@ const latest = (await getPieces())[0]
     </div>
   )}
 </div>
-<div class="np" id="np" data-endpoint={endpoint} hidden>
+<div class="np" id="np" role="group" aria-label="Zenith is listening now" data-endpoint={endpoint} hidden>
   <a class="np-link" id="np-link" href={SITE.spotify} target="_blank" rel="noopener">
     <img class="np-cover" id="np-cover" width="48" height="48" alt="" />
     <span class="np-text">
-      <span class="np-label"><i class="eq" aria-hidden="true"><b></b><b></b><b></b></i><span class="np-live">Zenith is listening now</span></span>
-      <span class="np-title" id="np-title"></span>
-      <span class="np-artist" id="np-artist"></span>
+      <span class="np-label"><i class="eq" aria-hidden="true"><b></b><b></b><b></b></i><span class="np-live">Listening now</span></span>
+      <span class="np-marq" id="np-marq"><span class="np-track" id="np-track"><span class="np-title" id="np-title"></span><span class="np-artist" id="np-artist"></span></span></span>
     </span>
   </a>
   <button class="np-x" id="np-x" type="button" aria-label="dismiss now playing">×</button>

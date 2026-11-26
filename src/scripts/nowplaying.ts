@@ -6,6 +6,8 @@ const link = document.getElementById("np-link") as HTMLAnchorElement
 const cover = document.getElementById("np-cover") as HTMLImageElement
 const titleEl = document.getElementById("np-title")!
 const artistEl = document.getElementById("np-artist")!
+const marq = document.getElementById("np-marq")!
+const track = document.getElementById("np-track")!
 const closeBtn = document.getElementById("np-x")!
 const endpoint = np.dataset.endpoint ?? ""
 const POLL = 30_000
@@ -17,6 +19,21 @@ let hideTimer = 0
 let timer = 0
 const dismissed = () => { try { return sessionStorage.getItem("np-x") === "1" } catch { return false } }
 
+/* Phone bar: if "Song · Artist" does not fit on its one line, scroll it slowly back and forth (24px/s,
+   pausing at both ends). With reduced motion it stays still and ends in an ellipsis instead. */
+const SPEED = 24
+function fit() {
+  marq.classList.remove("scroll")
+  if (!matchMedia("(max-width: 767px)").matches || matchMedia("(prefers-reduced-motion: reduce)").matches) return
+  const over = track.offsetWidth - marq.clientWidth
+  if (over > 1) {
+    marq.style.setProperty("--shift", `${-over}px`)
+    marq.style.setProperty("--dur", `${Math.max(6, (over / SPEED) * 2 + 3)}s`)
+    marq.classList.add("scroll")
+  }
+}
+addEventListener("resize", fit)
+
 function show(p: Playing) {
   link.href = p.url!
   cover.src = p.cover ?? ""
@@ -24,11 +41,12 @@ function show(p: Playing) {
   titleEl.textContent = p.title!
   artistEl.textContent = p.artist ?? ""
   clearTimeout(hideTimer)
-  if (visible) return
+  if (visible) { requestAnimationFrame(fit); return }
   visible = true
   np.hidden = false
   void np.offsetWidth // let the browser register opacity 0 before fading to 1
   np.classList.add("on")
+  requestAnimationFrame(fit)
 }
 function hide() {
   if (!visible) return

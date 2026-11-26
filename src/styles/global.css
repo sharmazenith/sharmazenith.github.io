@@ -5,7 +5,7 @@
   --bg: #FFFFFF;
   --fg: #0F1012;
   --soft: #555555;
-  --muted: #757575;
+  --muted: #6E737B;
   --line: #d9d9d9;
   --card: #F7F7F8;
   --accent: #89AEE8; /* theme color: marks and indicators only, too light for text */
@@ -148,6 +148,8 @@ html[data-section="elsewhere"] .rail-writing { display: block; }
 .np-cover[hidden] { display: none; }
 .np-text { display: block; min-width: 0; }
 .np-label { display: flex; align-items: center; gap: 8px; font: var(--type-small); text-transform: uppercase; letter-spacing: var(--track-small); color: var(--muted); }
+.np-marq { display: block; min-width: 0; }
+.np-track { display: block; min-width: 0; }
 .np-title, .np-artist { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .np-title { margin-top: 4px; color: var(--fg); }
 .np-artist { color: var(--muted); }
@@ -169,7 +171,7 @@ html[data-section="elsewhere"] .rail-writing { display: block; }
 .lead { font: var(--type-body); color: var(--soft); max-width: 68ch; margin-top: 24px; text-align: left; hyphens: none; text-wrap: pretty; }
 .pane > .lead:first-child { margin-top: 0; }
 .lead + .lead { margin-top: 1em; }
-.row { display: grid; grid-template-columns: 140px minmax(0, 1fr) fit-content(35%); align-items: baseline; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--line); transition: border-color .3s var(--ease); }
+.row { display: grid; grid-template-columns: 112px minmax(0, 1fr) fit-content(35%); align-items: baseline; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--line); transition: border-color .3s var(--ease); }
 .row .when { color: var(--muted); font-variant-numeric: tabular-nums; }
 .row .ttl { font: var(--type-title); letter-spacing: var(--track-title); color: var(--fg); }
 .row .note { color: var(--muted); margin-top: 2px; }
@@ -290,6 +292,12 @@ dl { margin: 0; }
   .plist-rail a { margin-left: 0; padding-left: 0; }
 }
 
+/* narrow desktop: three columns leave the title only ~130px, so the organisation drops under it */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .row { grid-template-columns: 112px minmax(0, 1fr); }
+  .row .where { grid-column: 2; text-align: left; }
+}
+
 /* ---------- phone: one column, designed for the thumb ---------- */
 @media (max-width: 767px) {
   :root {
@@ -342,20 +350,23 @@ dl { margin: 0; }
   .body-text p, .body-text li { font-size: 17px; line-height: 28px; }
 
   /* now playing: a slim fixed bar, dismissible for the session */
-  .np { position: fixed; left: 0; right: 0; bottom: 0; z-index: 14; margin: 0; padding: 8px var(--gutter) calc(8px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); }
-  html:has(.switcher) .np { bottom: calc(60px + env(safe-area-inset-bottom)); padding-bottom: 8px; }
-  .np-link { align-items: center; gap: 12px; padding-right: 44px; }
-  .np-cover { width: 32px; height: 32px; }
-  .np-text { display: flex; align-items: baseline; min-width: 0; white-space: nowrap; overflow: hidden; }
+  .np { position: fixed; left: 0; right: 0; bottom: 0; z-index: 14; margin: 0; padding: 0 var(--gutter) env(safe-area-inset-bottom); background: var(--bg); border-top: 1px solid var(--line); }
+  html:has(.switcher) .np { bottom: calc(60px + env(safe-area-inset-bottom)); padding-bottom: 0; }
+  /* two lines inside 56px: cover | (LISTENING NOW / Song · Artist) | x */
+  .np-link { align-items: center; gap: 12px; padding-right: 44px; min-height: 56px; } /* the whole bar is the tap target */
+  .np-cover { width: 40px; height: 40px; }
+  .np-text { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
   .np-label { flex: none; }
-  .eq { display: none; }
-  .np-live { font-size: 0; }
-  .np-live::before { content: "Listening now"; font-size: 12px; }
-  .np-label::after { content: "·"; margin: 0 8px; }
-  .np-title { margin: 0; flex: 0 1 auto; }
-  .np-artist::before { content: "·"; margin: 0 8px; color: var(--muted); }
-  .np-artist { flex: 0 1 auto; }
-  .np-x { display: block; position: absolute; right: calc(var(--gutter) - 14px); top: 50%; transform: translateY(-50%); width: 44px; height: 44px; color: var(--muted); font: var(--type-title); text-align: center; }
+  .np-marq { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: var(--type-body); }
+  .np-track { display: inline-block; }
+  .np-title, .np-artist { display: inline; overflow: visible; text-overflow: clip; margin: 0; }
+  .np-title { color: var(--fg); }
+  .np-artist::before { content: " · "; color: var(--muted); }
+  .np-artist:empty::before { content: none; }
+  .np-marq.scroll { text-overflow: clip; }
+  .np-marq.scroll .np-track { animation: np-scroll var(--dur, 12s) linear infinite alternate; }
+  @keyframes np-scroll { 0%, 18% { transform: translateX(0); } 82%, 100% { transform: translateX(var(--shift)); } }
+  .np-x { display: block; position: absolute; right: calc(var(--gutter) - 14px); top: 28px; transform: translateY(-50%); width: 44px; height: 44px; color: var(--muted); font: var(--type-title); text-align: center; }
   html:has(.np.on:not(.dismissed)) .pane { padding-bottom: 120px; }
 
   .footer { height: auto; min-height: var(--footer); padding-bottom: env(safe-area-inset-bottom); }
