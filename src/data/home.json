@@ -1,0 +1,113 @@
+{
+  "intro": [
+    "I live in Nebraska and work on the data side of a door manufacturer. Most days that comes down to convincing very old software to share.",
+    "Outside of work I swim, play chess, and practice a harmonium I'm slowly getting less bad at. The notes and poems here were mostly written for me, but you're welcome to them."
+  ],
+  "sidebar": {
+    "tagline": [
+      "By day, I'm a data engineer.",
+      "By night, I write here."
+    ],
+    "contactLabel": "Write to me.",
+    "openToNewWork": false
+  },
+  "work": [
+    {
+      "dates": {
+        "start": "2024",
+        "end": "now"
+      },
+      "title": "Data Engineer",
+      "organization": "Forte Opening Solutions",
+      "city": "Remote"
+    },
+    {
+      "dates": {
+        "start": "2021",
+        "end": "2024"
+      },
+      "title": "Data Scientist",
+      "organization": "City+Ventures",
+      "city": "Omaha, NE"
+    },
+    {
+      "dates": {
+        "start": "2019",
+        "end": "2021"
+      },
+      "title": "Healthcare Analyst",
+      "organization": "Conifer Health Solutions",
+      "city": "Omaha, NE"
+    },
+    {
+      "dates": {
+        "start": "2017",
+        "end": "2019"
+      },
+      "title": "Marketing Analyst",
+      "note": "Internship",
+      "organization": "Strategic Risk Associates",
+      "city": "Omaha, NE"
+    }
+  ],
+  "built": [
+    {
+      "name": "Forte Reporting Platform",
+      "description": "Internal reporting portal for every business unit.",
+      "href": ""
+    },
+    {
+      "name": "Fuse",
+      "description": "A personal AI assistant that works across my Obsidian vaults.",
+      "href": ""
+    }
+  ],
+  "tools": [
+    {
+      "label": "Languages",
+      "items": [
+        "SQL",
+        "Python",
+        "TypeScript"
+      ]
+    },
+    {
+      "label": "Data",
+      "items": [
+        "Snowflake",
+        "dbt",
+        "Power BI",
+        "Pandas"
+      ]
+    },
+    {
+      "label": "Cloud",
+      "items": [
+        "Azure",
+        "Azure Data Factory"
+      ]
+    }
+  ],
+  "school": [
+    {
+      "dates": {},
+      "title": "BS, Healthcare Administration and Policy",
+      "organization": "Creighton University",
+      "city": "Omaha, NE",
+      "note": "Swim Club · Chess Club"
+    },
+    {
+      "dates": {},
+      "title": "High School Diploma",
+      "organization": "Omaha North Magnet High School",
+      "city": "Omaha, NE",
+      "note": "Swim Club · Math Club · Science Olympiad"
+    },
+    {
+      "dates": {},
+      "title": "Grade 8",
+      "organization": "Northeast Middle School",
+      "city": "Bethlehem, PA"
+    }
+  ]
+}

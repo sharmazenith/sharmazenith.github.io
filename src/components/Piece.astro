@@ -1,0 +1,44 @@
+---
+import { render } from "astro:content"
+import { SECTION } from "../config"
+import { variantsOf, toLines, fmtDay, hrefOf, segOf, type Piece } from "../lib/content"
+
+interface Props { entry: Piece; prev?: Piece; next?: Piece }
+const { entry, prev, next } = Astro.props
+const { type, date, lang, title, attribution } = entry.data
+const prose = type === "note" || type === "essay"
+const variants = prose ? [] : variantsOf(entry)
+const Content = prose ? (await render(entry)).Content : null
+const href = hrefOf
+---
+<article class="piece" data-type={segOf(type)} data-slug={entry.id}>
+  <a class="back" href={`/${SECTION.slug}/`}>← {SECTION.label}</a>
+  {prose ? (<>
+    {title && <h1 class="ptitle">{title}</h1>}
+    <div class="body-text" lang={lang} dir={lang === "ur" ? "rtl" : undefined}>{Content && <Content />}</div>
+  </>) : (<>
+    {variants.length > 1 && (
+      <div class="switcher" role="group" aria-label="script">
+        {variants.map((v, i) => <button type="button" data-script={v.key} aria-pressed={i === 0 ? "true" : "false"}>{v.label}</button>)}
+      </div>
+    )}
+    <div class="stack">
+      {variants.map((v, i) => (
+        <div class={`var${i === 0 ? " on" : ""}`} data-script={v.key} lang={v.lang} dir={v.lang === "ur" ? "rtl" : undefined}>
+          {toLines(v.text).map((l) => <p class={l.gap ? "gap" : undefined}>{l.text}</p>)}
+        </div>
+      ))}
+    </div>
+    {attribution && <p class="attr">{attribution}</p>}
+  </>)}
+  <div class="admin-bar" hidden>
+    <button type="button" data-admin="edit">Edit</button>
+    <button type="button" data-admin="unpublish">Unpublish</button>
+    <span class="admin-msg" role="status"></span>
+  </div>
+  <p class="rmeta">{fmtDay(date)} · {type}</p>
+  <nav class="pager" aria-label="more writing" data-slug={entry.id}>
+    {prev ? <a href={href(prev)} data-dir="prev">← Previous</a> : <span data-dir="prev"></span>}
+    {next ? <a href={href(next)} data-dir="next">Next →</a> : <span data-dir="next"></span>}
+  </nav>
+</article>

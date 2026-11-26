@@ -1,0 +1,46 @@
+---
+// Both rails live inside the persisted element; CSS shows the one for the current section, so it never re-mounts.
+import { getPieces, labelOf, variantsOf, fmtDay, segOf, hrefOf, TYPES } from "../lib/content"
+import { SECTION } from "../config"
+import Editor from "./Editor.astro"
+
+interface Props { filter: string }
+const { filter } = Astro.props
+import { intro, work, built, tools, school } from "../lib/home"
+
+const pieces = await getPieces()
+const sections = [
+  intro.length > 0 && { id: "intro", label: "Intro" },
+  work.length > 0 && { id: "work", label: "Work" },
+  built.length > 0 && { id: "built", label: "Things I've built" },
+  tools.length > 0 && { id: "tools", label: "Tools I reach for" },
+  school.length > 0 && { id: "school", label: "School" },
+].filter(Boolean) as { id: string; label: string }[]
+const count = (k: string) => pieces.filter((p) => p.data.type === k).length
+const here = (f: string) => (f === filter ? "page" : undefined)
+---
+<nav class="rail-home" aria-label="résumé sections">
+  {sections.map((s) => <a href={`#${s.id}`} data-spy={s.id}>{s.label}</a>)}
+</nav>
+<div class="rail-writing">
+  <button class="write-entry" id="write-entry" type="button" hidden>Write</button>
+  <template id="editor-tpl"><Editor /></template>
+  <nav class="filters" aria-label="filter writing">
+    <a href={`/${SECTION.slug}/`} data-filter="all" aria-current={here("all")}>All<span>{pieces.length}</span></a>
+    {TYPES.map((t) => <a href={`/${SECTION.slug}/${t.seg}/`} data-filter={t.seg} aria-current={here(t.seg)}>{t.label}<span>{count(t.key)}</span></a>)}
+  </nav>
+  <ul class="plist-rail">
+    {pieces.map((p) => {
+      const v = variantsOf(p)[0]
+      return (
+        <li data-type={segOf(p.data.type)} hidden={filter !== "all" && segOf(p.data.type) !== filter}>
+          <a href={hrefOf(p)} data-slug={p.id}>
+            <span class="rt" lang={v?.lang ?? p.data.lang} dir={p.data.lang === "ur" && !v?.lang.endsWith("Latn") ? "rtl" : undefined}>{labelOf(p)}</span>
+            <span class="rd">{fmtDay(p.data.date)}</span>
+          </a>
+        </li>
+      )
+    })}
+  </ul>
+  <p class="rail-empty" hidden={pieces.some((p) => filter === "all" || segOf(p.data.type) === filter)}>Nothing here yet. Soon.</p>
+</div>

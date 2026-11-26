@@ -10,6 +10,15 @@
   font-style: normal;
   font-display: block; /* preloaded in Frame.astro: no flash of a fallback face */
 }
+/* metric matched stand in (measured against the font file and Arial), so text does not reflow when the webfont arrives */
+@font-face {
+  font-family: "Neue Montreal Fallback";
+  src: local("Arial");
+  size-adjust: 95.78%;
+  ascent-override: 101.6%;
+  descent-override: 23.7%;
+  line-gap-override: 0%;
+}
 @font-face {
   font-family: "Script Devanagari";
   src: url("../assets/fonts/script-devanagari.woff2") format("woff2-variations");
@@ -28,7 +37,7 @@
 :root {
   --font-brand: "Neue Montreal";
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font: var(--font-brand), "Script Devanagari", "Script Arabic", var(--font-sans);
+  --font: var(--font-brand), "Neue Montreal Fallback", "Script Devanagari", "Script Arabic", var(--font-sans);
 
   /* tokens: weight size/line-height family */
   --type-display: 500 28px/1.2 var(--font);  /* H1 intro statement, once per page */
@@ -59,8 +68,7 @@ b, strong, h1, h2, h3, h4, h5, h6, th { font-weight: 500; }
 /* Small token: uppercase, tracked. It sets interface labels (nav, section headings, tabs, footer,
    link rows, meta). Anything read as writing stays in sentence case at Body or Section.
    Applied here so the stored text stays in normal case and can be changed in one place. */
-.nav a, .nav button, .crumbs, .sec, .tabs .tab, .tabs .sort, .links a, .status, .cap, .meta, .rmeta,
-.kv dt, .np-label, .np-listen, .np-time, .empty, .back, .pager, .latest .more, .foot, .t-small {
+.nav a, .theme, .sec, .links a, .cap, .rmeta, .kv dt, .back, .pager, .footer, .t-small {
   font: var(--type-small);
   text-transform: uppercase;
   letter-spacing: var(--track-small);

@@ -1,0 +1,48 @@
+---
+// The ID card. Static markup, rendered once; the only live part is the now playing block.
+import { Image } from "astro:assets"
+import { SITE } from "../config"
+import profile from "../assets/profile.jpg"
+import { sidebar } from "../lib/home"
+import { getPieces, labelOf, hrefOf } from "../lib/content"
+
+interface Props { endpoint: string }
+const { endpoint } = Astro.props
+const latest = (await getPieces())[0]
+---
+<div class="card">
+  <Image class="avatar" src={profile} width={72} height={72} densities={[1, 2]} alt="Zenith Sharma" loading="eager" />
+  <div class="name">Zenith Sharma</div>
+  <p class="tag">{sidebar.tagline.join(" ")}</p>
+  {sidebar.contactLabel && <span class="write">
+    <button class="write-btn" id="write" type="button" aria-expanded="false" aria-controls="write-menu">{sidebar.contactLabel}</button>
+    <div class="menu" id="write-menu" hidden>
+      {SITE.email && <button type="button" id="copy-email" data-email={SITE.email}><span>Copy email</span></button>}
+      {SITE.linkedin && <a href={SITE.linkedin} rel="noopener"><span>LinkedIn</span><span>↗</span></a>}
+      <a href={SITE.github} rel="noopener"><span>GitHub</span><span>↗</span></a>
+    </div>
+    <div class="toast" id="toast" role="status" hidden></div>
+  </span>}
+  <div class="links">
+    {SITE.resumePdf && <a href={SITE.resumePdf}><span>Résumé, one page</span><span class="arr">↓</span></a>}
+    <a href={SITE.github} rel="noopener"><span>GitHub</span><span class="arr">↗</span></a>
+    {SITE.linkedin && <a href={SITE.linkedin} rel="noopener"><span>LinkedIn</span><span class="arr">↗</span></a>}
+  </div>
+  {latest && (
+    <div class="latest">
+      <div class="cap">Last written</div>
+      <a class="lw" href={hrefOf(latest)}>{labelOf(latest)}</a>
+    </div>
+  )}
+</div>
+<div class="np" id="np" data-endpoint={endpoint} hidden>
+  <a class="np-link" id="np-link" href={SITE.spotify} target="_blank" rel="noopener">
+    <img class="np-cover" id="np-cover" width="48" height="48" alt="" />
+    <span class="np-text">
+      <span class="np-label"><i class="eq" aria-hidden="true"><b></b><b></b><b></b></i><span class="np-live">Zenith is listening now</span></span>
+      <span class="np-title" id="np-title"></span>
+      <span class="np-artist" id="np-artist"></span>
+    </span>
+  </a>
+  <button class="np-x" id="np-x" type="button" aria-label="dismiss now playing">×</button>
+</div>

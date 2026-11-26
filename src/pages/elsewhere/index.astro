@@ -1,0 +1,13 @@
+---
+import Shell from "../../layouts/Shell.astro"
+import Piece from "../../components/Piece.astro"
+import { SITE, SECTION } from "../../config"
+import { getPieces } from "../../lib/content"
+
+const pieces = await getPieces()
+const [latest, older] = pieces
+---
+<Shell section="elsewhere" view="list" filter="all" title={`${SECTION.label} · ${SITE.name}`}>
+  <p class="lead">Shayari, mostly written late. Notes on data, books, and whatever stayed with me.</p>
+  {latest && <Piece entry={latest} next={older} />}
+</Shell>

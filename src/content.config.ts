@@ -2,26 +2,23 @@ import { defineCollection } from "astro:content"
 import { glob } from "astro/loaders"
 import { z } from "astro/zod"
 
-// lang sets text direction and script. en is left to right, hi is Devanagari, ur is right to left.
-const common = {
-  date: z.coerce.date(),
-  lang: z.enum(["en", "hi", "ur"]).default("en"),
-  excerpt: z.string().optional(),
-  draft: z.boolean().default(false),
-}
-
-const shayari = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/shayari" }),
+// Everything written lives in src/content/elsewhere/*.mdx (or .md).
+// `lang` is the language of the original. A piece may carry script and translation variants:
+// when more than one exists, the reader gets a switcher. With none, the body text is the piece.
+const elsewhere = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/elsewhere" }),
   schema: z.object({
-    ...common,
     title: z.string().optional(),
-    form: z.enum(["sher", "ghazal", "nazm", "qita"]).default("sher"),
+    type: z.enum(["shayari", "note", "essay", "quote"]),
+    date: z.coerce.date(),
+    lang: z.enum(["hi", "ur", "en"]).default("en"),
+    excerpt: z.string().optional(),
+    attribution: z.string().optional(), // quotes: who said it
+    draft: z.boolean().default(false),
+    devanagari: z.string().optional(),
+    roman: z.string().optional(),
+    english: z.string().optional(),
   }),
 })
 
-const notes = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/notes" }),
-  schema: z.object({ ...common, title: z.string() }),
-})
-
-export const collections = { shayari, notes }
+export const collections = { elsewhere }

@@ -1,0 +1,14 @@
+---
+import type { work } from "../lib/home"
+interface Props { entry: (typeof work)[number]; i?: number }
+const { entry: e, i } = Astro.props
+---
+<div class="row" style={i === undefined ? undefined : `--i:${i}`}>
+  <span class="when">{e.when}</span>
+  <div class="what">
+    <div class="ttl">{e.title}</div>
+    {e.note && <div class="note">{e.note}</div>}
+    {e.bullets.length > 0 && <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>}
+  </div>
+  <span class="where">{e.organization}{e.organization && e.city && <br />}{e.city}</span>
+</div>

@@ -1,0 +1,15 @@
+---
+import Shell from "../../../layouts/Shell.astro"
+import Piece from "../../../components/Piece.astro"
+import { SITE, SECTION } from "../../../config"
+import { getPieces, segOf, TYPES } from "../../../lib/content"
+
+export function getStaticPaths() {
+  return TYPES.map((t) => ({ params: { type: t.seg }, props: { seg: t.seg, label: t.label, empty: t.empty } }))
+}
+const { seg, label, empty } = Astro.props
+const list = (await getPieces()).filter((p) => segOf(p.data.type) === seg)
+---
+<Shell section="elsewhere" view="list" filter={seg} title={`${label} · ${SECTION.label} · ${SITE.name}`}>
+  {list[0] ? <Piece entry={list[0]} next={list[1]} /> : <p class="lead">{empty}</p>}
+</Shell>

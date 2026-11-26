@@ -1,0 +1,33 @@
+---
+// The writing form, shipped inside a <template> in the persisted rail and opened in the middle column by src/scripts/admin.ts.
+// Only the admin ever sees it: the script reveals the WRITE entry when a valid signed token is present.
+---
+<form class="editor" novalidate>
+  <div class="ed-drafts" hidden><div class="ed-l">Drafts</div><div class="ed-draft-list"></div></div>
+  <div class="ed-form">
+    <div class="ed-row"><span class="ed-l">Type</span>
+      <div class="seg" role="group" aria-label="type" data-seg="type">
+        <button type="button" data-val="shayari" aria-pressed="true">Shayari</button><button type="button" data-val="note" aria-pressed="false">Note</button><button type="button" data-val="essay" aria-pressed="false">Essay</button><button type="button" data-val="quote" aria-pressed="false">Quote</button>
+      </div>
+    </div>
+    <div class="ed-row"><span class="ed-l">Original language</span>
+      <div class="seg" role="group" aria-label="original language" data-seg="lang">
+        <button type="button" data-val="hi" lang="hi" aria-pressed="true">हिन्दी</button><button type="button" data-val="ur" lang="ur" aria-pressed="false">اردو</button><button type="button" data-val="en" aria-pressed="false">English</button>
+      </div>
+    </div>
+    <label class="ed-row"><span class="ed-l">Title <em class="ed-hint" data-title-hint>optional for shayari</em></span><input name="title" type="text" autocomplete="off" /></label>
+    <label class="ed-row" data-var="devanagari"><span class="ed-l" lang="hi">देवनागरी <em class="ed-req" hidden>required</em></span><textarea name="devanagari" lang="hi" rows="7" spellcheck="false"></textarea></label>
+    <label class="ed-row" data-var="roman"><span class="ed-l">Roman <em class="ed-req" hidden>required</em></span><textarea name="roman" lang="hi-Latn" rows="7" spellcheck="false"></textarea></label>
+    <label class="ed-row" data-var="english"><span class="ed-l">English <em class="ed-req" hidden>required</em></span><textarea name="english" lang="en" rows="7"></textarea></label>
+    <label class="ed-row" data-quote hidden><span class="ed-l">Attribution</span><input name="attribution" type="text" autocomplete="off" /></label>
+    <label class="ed-row"><span class="ed-l">Date</span><input name="date" type="date" /></label>
+  </div>
+  <div class="ed-preview" hidden></div>
+  <div class="ed-actions">
+    <button type="button" data-act="preview">Preview</button>
+    <button type="button" data-act="draft">Save draft</button>
+    <button type="button" data-act="publish" class="primary">Publish</button>
+    <button type="button" data-act="close">Close</button>
+  </div>
+  <p class="ed-msg" role="status" aria-live="polite"></p>
+</form>
