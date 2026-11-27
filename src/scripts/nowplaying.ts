@@ -8,16 +8,15 @@ const titleEl = document.getElementById("np-title")!
 const artistEl = document.getElementById("np-artist")!
 const marq = document.getElementById("np-marq")!
 const track = document.getElementById("np-track")!
-const closeBtn = document.getElementById("np-x")!
 const endpoint = np.dataset.endpoint ?? ""
-const POLL = 30_000
+const POLL = 5_000 // the Worker answers from a 4s memo, so this is as fresh as Spotify allows without a push channel
 const FADE = 200
 
 interface Playing { isPlaying: boolean; title?: string; artist?: string; url?: string; cover?: string }
 let visible = false
 let hideTimer = 0
 let timer = 0
-const dismissed = () => { try { return sessionStorage.getItem("np-x") === "1" } catch { return false } }
+let misses = 0 // consecutive failed checks; a network blip must not make it flicker away
 
 /* Phone bar: if "Song · Artist" does not fit on its one line, scroll it slowly back and forth (24px/s,
    pausing at both ends). With reduced motion it stays still and ends in an ellipsis instead. */
@@ -61,21 +60,20 @@ async function poll() {
     const res = await fetch(endpoint, { cache: "no-store" })
     if (!res.ok) throw new Error(String(res.status))
     const p = (await res.json()) as Playing
+    misses = 0
     const ok = p.isPlaying && p.title && typeof p.url === "string" && p.url.startsWith("https://open.spotify.com/")
     if (ok) show({ ...p, cover: p.cover?.startsWith("https://i.scdn.co/") ? p.cover : "" })
-    else hide()
-  } catch { hide() } // any failure means nothing is shown, never a placeholder
+    else hide() // it goes away only when nothing is playing
+  } catch {
+    if (++misses >= 3) hide() // keep what is showing through a brief outage
+  }
 }
-
-closeBtn.addEventListener("click", () => {
-  try { sessionStorage.setItem("np-x", "1") } catch { /* lasts until reload */ }
-  np.classList.add("dismissed")
-})
-if (dismissed()) np.classList.add("dismissed")
 
 console.info("now-playing: started")
 void poll()
 timer = window.setInterval(poll, POLL)
 document.addEventListener("visibilitychange", () => { if (!document.hidden) void poll() })
+addEventListener("focus", () => void poll())
+addEventListener("online", () => void poll())
 void timer
 export {}

@@ -80,6 +80,7 @@ function layout() {
     row.querySelector<HTMLElement>(".ed-req")!.hidden = k !== PRIMARY[f.lang]
   }
   ed!.querySelector<HTMLElement>("[data-quote]")!.hidden = f.type !== "quote"
+  ed!.querySelector<HTMLElement>('[data-act="translate"]')!.hidden = prose || !f.roman.trim()
   ed!.querySelector<HTMLElement>("[data-title-hint]")!.textContent = prose ? "required" : "optional"
 }
 const msg = (text: string, link?: { href: string; label: string }) => {
@@ -162,6 +163,23 @@ async function openExisting(slug: string) {
   return null
 }
 
+/* Roman in, Devanagari and a plain English translation out. They land in the boxes as drafts to read and fix. */
+async function translateRoman(btn: HTMLButtonElement) {
+  const roman = input("roman").value.trim()
+  if (!roman) { msg("Write something in the Roman box first."); return }
+  const filled = input("devanagari").value.trim() || input("english").value.trim()
+  if (filled && btn.dataset.armed !== "1") { btn.dataset.armed = "1"; btn.textContent = "Replace the other two?"; msg("This overwrites the Devanagari and English boxes. Press again to confirm."); return }
+  btn.dataset.armed = ""; btn.textContent = "Translate Roman"
+  btn.disabled = true; msg("Translating…")
+  const r = await call("POST", "/translate", { roman })
+  btn.disabled = false
+  if (r.status !== 200) { msg(explain(r)); return }
+  input("devanagari").value = r.data.devanagari
+  input("english").value = r.data.english
+  layout()
+  msg("Filled in. Read both, fix anything that is off, then publish.")
+}
+
 async function submit(draft: boolean) {
   const f = { ...read(), draft }
   const busy = ed!.querySelectorAll<HTMLButtonElement>("[data-act]")
@@ -190,6 +208,7 @@ document.addEventListener("click", async (e) => {
     const a = act.dataset.act
     if (a === "publish") await submit(false)
     else if (a === "draft") await submit(true)
+    else if (a === "translate") await translateRoman(act)
     else if (a === "close") location.reload() // back to the page as visitors see it
     else if (a === "preview") {
       const box = ed.querySelector<HTMLElement>(".ed-preview")!, form = ed.querySelector<HTMLElement>(".ed-form")!

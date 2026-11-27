@@ -55,7 +55,9 @@ body { height: 100dvh; overflow: hidden; }
 /* one centred container. Side columns are the same width, so the middle column's centre is the page's centre. */
 .cols { display: grid; grid-template-columns: var(--side) minmax(0, 1fr) var(--side); width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); min-height: 0; }
 .rail, .panel, .middle { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-.middle { scrollbar-gutter: stable; }
+/* columns still scroll, but no scrollbar line is drawn */
+.rail, .panel, .middle, .plist-rail { scrollbar-width: none; -ms-overflow-style: none; }
+.rail::-webkit-scrollbar, .panel::-webkit-scrollbar, .middle::-webkit-scrollbar, .plist-rail::-webkit-scrollbar { display: none; }
 /* the box reaches 16px left of the text edge, so the selected row's 2px rule is never clipped while every label still starts on the container line */
 .rail { margin-left: -16px; border-right: 1px solid var(--line); padding: var(--content-top) var(--pad) var(--content-top) 16px; transition: border-color .16s var(--ease); }
 .panel { border-left: 1px solid var(--line); padding: var(--content-top) 0 var(--content-top) var(--pad); transition: border-color .16s var(--ease); }
@@ -142,7 +144,7 @@ html[data-section="elsewhere"] .rail-writing { display: block; }
 /* now playing: absent unless Zenith is listening; fades in and out; last in the panel, so nothing above it moves */
 .np { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); position: relative; opacity: 0; transition: opacity .2s linear; }
 .np.on { opacity: 1; }
-.np[hidden], .np.dismissed { display: none; }
+.np[hidden] { display: none; }
 .np-link { display: flex; gap: 14px; align-items: flex-start; }
 .np-cover { display: block; width: 48px; height: 48px; flex: none; object-fit: cover; background: var(--card); }
 .np-cover[hidden] { display: none; }
@@ -159,7 +161,6 @@ html[data-section="elsewhere"] .rail-writing { display: block; }
 .eq b:nth-child(2) { animation-delay: -.35s; animation-duration: 1.2s; }
 .eq b:nth-child(3) { animation-delay: -.7s; animation-duration: .9s; }
 @keyframes eq { 0% { transform: scaleY(.3); } 50% { transform: scaleY(1); } 100% { transform: scaleY(.3); } }
-.np-x { display: none; }
 
 /* ---------- pane content ---------- */
 .sec { display: flex; align-items: center; gap: 16px; margin: 48px 0 8px; color: var(--fg); }
@@ -317,7 +318,6 @@ dl { margin: 0; }
   .theme { justify-content: center; min-width: 44px; min-height: 44px; margin-right: -14px; }
   .cols { display: flex; flex: 1; flex-direction: column; max-width: none; padding-inline: 0; }
   .rail, .panel, .middle { overflow: visible; min-height: auto; }
-  .middle { scrollbar-gutter: auto; }
   .pane { padding-bottom: 72px; }
 
   /* home: a compact ID card on top, the résumé under it, no index */
@@ -349,11 +349,11 @@ dl { margin: 0; }
   /* long reading on a phone: 17/28 on a piece's own page */
   .body-text p, .body-text li { font-size: 17px; line-height: 28px; }
 
-  /* now playing: a slim fixed bar, dismissible for the session */
+  /* now playing: a slim fixed bar, always shown while playing */
   .np { position: fixed; left: 0; right: 0; bottom: 0; z-index: 14; margin: 0; padding: 0 var(--gutter) env(safe-area-inset-bottom); background: var(--bg); border-top: 1px solid var(--line); }
   html:has(.switcher) .np { bottom: calc(60px + env(safe-area-inset-bottom)); padding-bottom: 0; }
   /* two lines inside 56px: cover | (LISTENING NOW / Song · Artist) | x */
-  .np-link { align-items: center; gap: 12px; padding-right: 44px; min-height: 56px; } /* the whole bar is the tap target */
+  .np-link { align-items: center; gap: 12px; min-height: 56px; } /* the whole bar is the tap target */
   .np-cover { width: 40px; height: 40px; }
   .np-text { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
   .np-label { flex: none; }
@@ -366,8 +366,7 @@ dl { margin: 0; }
   .np-marq.scroll { text-overflow: clip; }
   .np-marq.scroll .np-track { animation: np-scroll var(--dur, 12s) linear infinite alternate; }
   @keyframes np-scroll { 0%, 18% { transform: translateX(0); } 82%, 100% { transform: translateX(var(--shift)); } }
-  .np-x { display: block; position: absolute; right: calc(var(--gutter) - 14px); top: 28px; transform: translateY(-50%); width: 44px; height: 44px; color: var(--muted); font: var(--type-title); text-align: center; }
-  html:has(.np.on:not(.dismissed)) .pane { padding-bottom: 120px; }
+  html:has(.np.on) .pane { padding-bottom: 120px; }
 
   .footer { height: auto; min-height: var(--footer); padding-bottom: env(safe-area-inset-bottom); }
   .footer-in { flex-wrap: wrap; gap: 4px 20px; padding-block: 14px; }

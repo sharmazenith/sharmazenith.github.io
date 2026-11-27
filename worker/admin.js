@@ -15,6 +15,7 @@
 //   POST /publish        create a piece (commit)
 //   PUT  /piece          edit a piece; needs the SHA it was loaded with, else 409 "stale"
 //   POST /unpublish      set draft: true; needs the SHA
+//   POST /translate      romanized text in, Devanagari and a plain English translation out (Gemini free tier; needs GEMINI_API_KEY)
 //
 // Why a bearer token and not a cookie: the site (github.io) and this Worker (workers.dev) are different
 // sites, so a SameSite=Strict cookie would never be sent. The token is signed, expires in 30 days, and every
@@ -171,17 +172,17 @@ async function authed(request, env) {
   const p = m ? await verify(m[1], env.SESSION_SECRET) : null
   return p && p.login && p.login.toLowerCase() === String(env.ADMIN_GITHUB_LOGIN).toLowerCase() ? p : null
 }
-async function limited(env, login) {
+async function limited(env, login, cap = RATE_LIMIT) {
   const hour = Math.floor(Date.now() / 3_600_000)
   const key = `${login}:${hour}`
   if (env.RATE) {
     const n = Number((await env.RATE.get(key)) || 0)
-    if (n >= RATE_LIMIT) return true
+    if (n >= cap) return true
     await env.RATE.put(key, String(n + 1), { expirationTtl: 7200 })
     return false
   }
   const n = rate.get(key) || 0
-  if (n >= RATE_LIMIT) return true
+  if (n >= cap) return true
   rate.set(key, n + 1)
   for (const k of rate.keys()) if (!k.endsWith(`:${hour}`)) rate.delete(k)
   return false
@@ -206,6 +207,11 @@ export default {
       if (url.pathname === "/pieces" && request.method === "GET") return pieces(env, h)
       if (url.pathname === "/piece" && request.method === "GET") return getPiece(url, env, h)
 
+      if (url.pathname === "/translate" && request.method === "POST") {
+        if (await limited(env, user.login + ":translate", 60)) return json({ error: "Too many translations this hour. Try again later." }, 429, h)
+        const input = await request.json().catch(() => null)
+        return translate(input, env, h)
+      }
       if (["POST", "PUT"].includes(request.method) && ["/publish", "/piece", "/unpublish"].includes(url.pathname)) {
         if (await limited(env, user.login)) return json({ error: "Too many publishes this hour. Try again later." }, 429, h)
         const input = await request.json().catch(() => null)
@@ -237,7 +243,8 @@ async function callback(request, env) {
     method: "POST", headers: { accept: "application/json", "content-type": "application/json" },
     body: JSON.stringify({ client_id: env.GITHUB_OAUTH_CLIENT_ID, client_secret: env.GITHUB_OAUTH_CLIENT_SECRET, code: url.searchParams.get("code") }),
   }).then((r) => r.json()).catch(() => ({}))
-  if (!tok.access_token) return new Response("Sign-in failed.", { status: 400 })
+  // GitHub's error code (for example incorrect_client_credentials) says what is wrong and contains no secret
+  if (!tok.access_token) return new Response(`Sign-in failed. GitHub said: ${String(tok.error || "no answer").replace(/[^a-z_]/g, "")}.`, { status: 400 })
   const me = await fetch("https://api.github.com/user", { headers: { authorization: `Bearer ${tok.access_token}`, "user-agent": "elsewhere-admin", accept: "application/vnd.github+json" } }).then((r) => r.json()).catch(() => ({}))
   if (!me.login || me.login.toLowerCase() !== String(env.ADMIN_GITHUB_LOGIN).toLowerCase()) return new Response("Forbidden.", { status: 403 })
   const session = await sign({ login: me.login, exp: Math.floor(Date.now() / 1000) + 30 * DAY }, env.SESSION_SECRET)
@@ -294,4 +301,44 @@ async function unpublish(input, env, h) {
   const res = await writeFile(env, current.name, toMdx(f), messageFor("unpublish", f), input.sha)
   if (!res.ok) return json({ error: res.stale ? "stale" : "Could not commit. Nothing was changed." }, res.stale ? 409 : 502, h)
   return json({ slug, draft: true, sha: res.sha }, 200, h)
+}
+
+/* ---------- romanized Hindi/Urdu -> Devanagari + English, in the writer's own voice ---------- */
+// Google Gemini, free tier (key from aistudio.google.com). Change the model with the GEMINI_MODEL variable.
+const DEFAULT_MODEL = "gemini-2.5-flash"
+const TRANSLATE_SYSTEM = `You help a poet publish romanized Hindi and Urdu writing (shayari, notes, quotes).
+Given romanized text, return two things:
+1. "devanagari": the same text spelled in Devanagari, the way a native Hindi writer would spell it (correct matras, nukta only where the word needs it, anusvara and chandrabindu used properly). Do not change, fix or reword the words. Urdu words stay as spoken.
+2. "english": an honest translation. Rules:
+   - Raw and unfiltered. Keep the bluntness, bitterness, longing, anger and any rude or dark words exactly as strong as the original. Never soften, sanitise, moralise or add reassurance.
+   - Simple, plain, everyday words. Short sentences. No flowery or "poetic" wording that is not in the original, no explanations, no footnotes.
+   - Keep it about as long as the original. Do not pad.
+   - Stay faithful to meaning and the speaker's point of view. If a word has no clean English equivalent, use the closest plain word.
+Keep the line breaks and the blank lines between couplets exactly as in the input: same number of lines in both outputs.
+Reply with JSON only, in this exact shape and nothing else: {"devanagari": "...", "english": "..."}`
+
+async function translate(input, env, h) {
+  const roman = clean(input?.roman)
+  if (!roman) return json({ error: "Write something in the Roman box first." }, 422, h)
+  if (roman.length > 4000) return json({ error: "That is too long to translate at once. Do a few couplets at a time." }, 422, h)
+  if (!env.GEMINI_API_KEY) return json({ error: "Translation is not set up yet (missing GEMINI_API_KEY on the Worker)." }, 503, h)
+  const model = env.GEMINI_MODEL || DEFAULT_MODEL
+  const off = ["HARM_CATEGORY_HARASSMENT", "HARM_CATEGORY_HATE_SPEECH", "HARM_CATEGORY_SEXUALLY_EXPLICIT", "HARM_CATEGORY_DANGEROUS_CONTENT"].map((category) => ({ category, threshold: "BLOCK_NONE" }))
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+    method: "POST",
+    headers: { "x-goog-api-key": env.GEMINI_API_KEY, "content-type": "application/json" }, // header, not URL, so it is never logged
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: TRANSLATE_SYSTEM }] },
+      contents: [{ role: "user", parts: [{ text: roman }] }],
+      generationConfig: { responseMimeType: "application/json", temperature: 0.3, maxOutputTokens: 2000 },
+      safetySettings: off, // poetry can be dark and blunt; do not let a filter silently soften or block it
+    }),
+  })
+  if (res.status === 429) return json({ error: "Gemini's free limit was reached for now. Try again in a minute." }, 429, h)
+  if (!res.ok) return json({ error: "The translator did not answer. Nothing was changed." }, 502, h)
+  const text = (await res.json()).candidates?.[0]?.content?.parts?.map((x) => x.text ?? "").join("") ?? ""
+  let out
+  try { out = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)) } catch { out = null }
+  if (!out || typeof out.devanagari !== "string" || typeof out.english !== "string") return json({ error: "The translator's answer was not usable (it may have declined). Try again or edit by hand." }, 502, h)
+  return json({ devanagari: clean(out.devanagari), english: clean(out.english) }, 200, h)
 }

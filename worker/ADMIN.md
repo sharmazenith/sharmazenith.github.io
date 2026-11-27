@@ -39,6 +39,22 @@ Publishing commits a file to `src/content/elsewhere/` on `main`; the normal GitH
   meantime you get "This piece changed elsewhere. Reload to get the latest." and nothing is overwritten.
 - In progress writing autosaves in this browser every few seconds and is cleared after a successful publish.
 
+## Translate Roman (optional, free)
+
+In the editor, type romanized Hindi or Urdu in the **Roman** box and press **Translate Roman**. Google Gemini fills the
+Devanagari box and a plain, unsoftened English translation (same line breaks, no padding). Both are drafts to read and
+fix before publishing. It needs one more secret, from the free Gemini tier (no card):
+
+```
+# key: https://aistudio.google.com/apikey  (Create API key)
+npx wrangler secret put GEMINI_API_KEY -c wrangler.admin.toml
+npx wrangler deploy -c wrangler.admin.toml
+```
+
+Calls need your signed token and are limited to 60 per hour (Gemini's own free daily limit may be lower). The rules
+live in `worker/admin.js` (`TRANSLATE_SYSTEM`); change them to change the tone. Safety filters are turned off for this
+call so dark poetry is not blocked or softened. Free tier note: Google may use free tier inputs to improve its products.
+
 ## Security notes
 
 - Every request except sign-in needs a signed, expiring token for the admin account; anything else gets 401.
