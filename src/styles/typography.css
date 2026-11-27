@@ -20,8 +20,8 @@
   line-gap-override: 0%;
 }
 @font-face {
-  font-family: "Noto Serif Devanagari";
-  src: url("../assets/fonts/noto-serif-devanagari.woff2") format("woff2");
+  font-family: "Noto Sans Devanagari";
+  src: url("../assets/fonts/noto-sans-devanagari.woff2") format("woff2");
   font-weight: 100 900;
   font-display: swap;
   unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF;
@@ -37,7 +37,7 @@
 :root {
   --font-brand: "Neue Montreal";
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font: var(--font-brand), "Neue Montreal Fallback", "Noto Serif Devanagari", "Script Arabic", var(--font-sans);
+  --font: var(--font-brand), "Neue Montreal Fallback", "Noto Sans Devanagari", "Script Arabic", var(--font-sans);
 
   /* tokens: weight size/line-height family. Each step is x1.25 of the one below; line heights sit on a 4px grid. */
   --type-display: 500 25px/32px var(--font);  /* one per page at most: a piece's own title. Not on Home. */
