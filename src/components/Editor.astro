@@ -16,19 +16,22 @@
       </div>
     </div>
     <label class="ed-row"><span class="ed-l">Title <em class="ed-hint" data-title-hint>optional for shayari</em></span><input name="title" type="text" autocomplete="off" /></label>
-    <label class="ed-row" data-var="devanagari"><span class="ed-l" lang="hi">देवनागरी <em class="ed-req" hidden>required</em></span><textarea name="devanagari" lang="hi" rows="7" spellcheck="false"></textarea></label>
-    <label class="ed-row" data-var="roman"><span class="ed-l">Roman <em class="ed-req" hidden>required</em></span><textarea name="roman" lang="hi-Latn" rows="7" spellcheck="false"></textarea></label>
-    <label class="ed-row" data-var="english"><span class="ed-l">English <em class="ed-req" hidden>required</em></span><textarea name="english" lang="en" rows="7"></textarea></label>
+    <div class="ed-row" data-var="roman">
+      <label><span class="ed-l">Roman <em class="ed-req" hidden>required</em></span><textarea name="roman" lang="hi-Latn" rows="6" spellcheck="false" placeholder="Write it the way you'd type it in English letters"></textarea></label>
+      <div class="ed-tools"><button type="button" data-act="translate" disabled>Fill Devanagari and English</button><span class="ed-sub" data-tr-hint>Type in the Roman box first. Takes a few seconds. You can edit both after.</span></div>
+    </div>
+    <label class="ed-row" data-var="devanagari"><span class="ed-l" lang="hi">देवनागरी <em class="ed-req" hidden>required</em></span><textarea name="devanagari" lang="hi" rows="6" spellcheck="false" placeholder="Filled in for you, or type it yourself"></textarea></label>
+    <label class="ed-row" data-var="english"><span class="ed-l">English <em class="ed-req" hidden>required</em></span><textarea name="english" lang="en" rows="6" placeholder="Filled in for you, or type it yourself"></textarea></label>
     <label class="ed-row" data-quote hidden><span class="ed-l">Attribution</span><input name="attribution" type="text" autocomplete="off" /></label>
     <label class="ed-row"><span class="ed-l">Date</span><input name="date" type="date" /></label>
   </div>
   <div class="ed-preview" hidden></div>
   <div class="ed-actions">
-    <button type="button" data-act="translate" hidden>Translate Roman</button>
     <button type="button" data-act="preview">Preview</button>
     <button type="button" data-act="draft">Save draft</button>
     <button type="button" data-act="publish" class="primary">Publish</button>
     <button type="button" data-act="close">Close</button>
   </div>
+  <p class="ed-flow">1 Write  ·  2 Preview  ·  3 Publish (or save a draft). Nothing goes live until you press Publish.</p>
   <p class="ed-msg" role="status" aria-live="polite"></p>
 </form>

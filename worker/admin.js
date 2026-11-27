@@ -305,7 +305,7 @@ async function unpublish(input, env, h) {
 
 /* ---------- romanized Hindi/Urdu -> Devanagari + English, in the writer's own voice ---------- */
 // Google Gemini, free tier (key from aistudio.google.com). Change the model with the GEMINI_MODEL variable.
-const DEFAULT_MODEL = "gemini-2.5-flash"
+const DEFAULT_MODEL = "gemini-3.8-flash"
 const TRANSLATE_SYSTEM = `You help a poet publish romanized Hindi and Urdu writing (shayari, notes, quotes).
 Given romanized text, return two things:
 1. "devanagari": the same text spelled in Devanagari, the way a native Hindi writer would spell it (correct matras, nukta only where the word needs it, anusvara and chandrabindu used properly). Do not change, fix or reword the words. Urdu words stay as spoken.
@@ -335,7 +335,11 @@ async function translate(input, env, h) {
     }),
   })
   if (res.status === 429) return json({ error: "Gemini's free limit was reached for now. Try again in a minute." }, 429, h)
-  if (!res.ok) return json({ error: "The translator did not answer. Nothing was changed." }, 502, h)
+  if (!res.ok) {
+    // Gemini's own reason (for example an unknown model or a key that is not allowed); it never contains the key
+    const why = (await res.json().catch(() => ({})))?.error?.message ?? ""
+    return json({ error: `The translator did not answer (Gemini ${res.status}${why ? ": " + String(why).replace(/AIza[\w-]+/g, "").slice(0, 160) : ""}). Nothing was changed.` }, 502, h)
+  }
   const text = (await res.json()).candidates?.[0]?.content?.parts?.map((x) => x.text ?? "").join("") ?? ""
   let out
   try { out = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1)) } catch { out = null }

@@ -256,7 +256,7 @@ dl { margin: 0; }
 .editor input[type="text"], .editor input[type="date"], .editor textarea { display: block; width: 100%; padding: 10px 12px; border: 1px solid var(--line); background: transparent; color: var(--fg); font: var(--type-body); transition: border-color .2s var(--ease); }
 .editor input:focus, .editor textarea:focus { outline: 0; border-color: var(--fg); }
 /* the writing boxes use the published piece's own type, so what is typed looks like the result */
-.editor textarea { resize: vertical; min-height: 9em; font-size: 20px; line-height: 28px; white-space: pre-wrap; hyphens: none; }
+.editor textarea { resize: none; overflow: hidden; min-height: 150px; font-size: 20px; line-height: 28px; white-space: pre-wrap; hyphens: none; }
 .editor textarea[lang="hi"] { font-size: var(--dev-size); line-height: var(--dev-lh); }
 .editor [hidden] { display: none; }
 .ed-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -266,7 +266,13 @@ dl { margin: 0; }
 .ed-actions button:disabled { opacity: .5; cursor: default; }
 .ed-draft-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .ed-drafts { margin-bottom: 28px; }
-.ed-msg { margin-top: 16px; min-height: 1.5em; color: var(--soft); }
+.ed-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 10px; }
+.ed-tools button { min-height: 44px; padding: 0 18px; border: 1px solid var(--fg); color: var(--fg); font: var(--type-small); text-transform: uppercase; letter-spacing: var(--track-small); transition: opacity .2s var(--ease); }
+.ed-tools button:disabled { opacity: .4; border-color: var(--line); cursor: default; }
+.ed-sub { color: var(--muted); } .ed-sub[hidden] { display: none; }
+.editor textarea::placeholder, .editor input::placeholder { color: var(--muted); font-size: 16px; line-height: 24px; }
+.ed-flow { margin-top: 20px; color: var(--muted); }
+.ed-msg { margin-top: 12px; min-height: 1.5em; color: var(--soft); }
 .ed-msg a { color: var(--fg); border-bottom: 1px solid var(--accent); }
 .ed-preview .piece { margin-top: 0; }
 

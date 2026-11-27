@@ -56,6 +56,8 @@ const blank = (): Fields => ({ type: "shayari", lang: "hi", date: today(), title
 let ed: HTMLFormElement | null = null
 let mode: { kind: "new" } | { kind: "edit"; slug: string; sha: string } = { kind: "new" }
 
+/* textareas grow with what is typed, so nothing is hidden behind a scrollbar */
+function grow(t: HTMLTextAreaElement) { t.style.height = "auto"; t.style.height = `${Math.max(t.scrollHeight + 2, 150)}px` }
 const seg = (name: string) => ed!.querySelector<HTMLElement>(`[data-seg="${name}"]`)!
 const input = (name: string) => ed!.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement
 function read(): Fields {
@@ -80,7 +82,10 @@ function layout() {
     row.querySelector<HTMLElement>(".ed-req")!.hidden = k !== PRIMARY[f.lang]
   }
   ed!.querySelector<HTMLElement>("[data-quote]")!.hidden = f.type !== "quote"
-  ed!.querySelector<HTMLElement>('[data-act="translate"]')!.hidden = prose || !f.roman.trim()
+  const tr = ed!.querySelector<HTMLButtonElement>('[data-act="translate"]')!
+  tr.disabled = !f.roman.trim()
+  ed!.querySelector<HTMLElement>("[data-tr-hint]")!.hidden = !!f.roman.trim()
+  ed!.querySelectorAll<HTMLTextAreaElement>("textarea").forEach(grow)
   ed!.querySelector<HTMLElement>("[data-title-hint]")!.textContent = prose ? "required" : "optional"
 }
 const msg = (text: string, link?: { href: string; label: string }) => {
@@ -169,7 +174,7 @@ async function translateRoman(btn: HTMLButtonElement) {
   if (!roman) { msg("Write something in the Roman box first."); return }
   const filled = input("devanagari").value.trim() || input("english").value.trim()
   if (filled && btn.dataset.armed !== "1") { btn.dataset.armed = "1"; btn.textContent = "Replace the other two?"; msg("This overwrites the Devanagari and English boxes. Press again to confirm."); return }
-  btn.dataset.armed = ""; btn.textContent = "Translate Roman"
+  btn.dataset.armed = ""; btn.textContent = "Fill Devanagari and English"
   btn.disabled = true; msg("Translating…")
   const r = await call("POST", "/translate", { roman })
   btn.disabled = false
@@ -177,11 +182,23 @@ async function translateRoman(btn: HTMLButtonElement) {
   input("devanagari").value = r.data.devanagari
   input("english").value = r.data.english
   layout()
-  msg("Filled in. Read both, fix anything that is off, then publish.")
+  input("devanagari").focus()
+  msg("Filled in. Read both, fix anything that is off, then press Preview or Publish.")
+}
+
+/* point at what is missing instead of making you guess */
+function missing(f: Fields): { name: string; text: string } | null {
+  const prose = f.type === "note" || f.type === "essay"
+  if (prose && !f.title.trim()) return { name: "title", text: "Add a title first. Notes and essays need one." }
+  const primary = PRIMARY[f.lang]
+  if (!f[primary].trim()) return { name: primary, text: `The ${primary === "devanagari" ? "देवनागरी" : primary === "roman" ? "Roman" : "English"} box is empty. It is the original language, so it is required.` }
+  return null
 }
 
 async function submit(draft: boolean) {
   const f = { ...read(), draft }
+  const gap = draft ? null : missing(f)
+  if (gap) { msg(gap.text); input(gap.name).focus(); return }
   const busy = ed!.querySelectorAll<HTMLButtonElement>("[data-act]")
   busy.forEach((b) => (b.disabled = true))
   msg(draft ? "Saving draft…" : "Publishing…")
@@ -235,7 +252,7 @@ document.addEventListener("click", async (e) => {
     }
   }
 })
-document.addEventListener("input", () => { if (ed?.isConnected) layout() })
+document.addEventListener("input", (e) => { if (ed?.isConnected) { layout(); if ((e.target as Element).tagName === "TEXTAREA") grow(e.target as HTMLTextAreaElement) } })
 
 refreshAdmin()
 document.addEventListener("astro:after-swap", refreshAdmin)
