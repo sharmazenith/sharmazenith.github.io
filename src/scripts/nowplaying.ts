@@ -23,7 +23,8 @@ let misses = 0 // consecutive failed checks; a network blip must not make it fli
 const SPEED = 24
 function fit() {
   marq.classList.remove("scroll")
-  if (!matchMedia("(max-width: 767px)").matches || matchMedia("(prefers-reduced-motion: reduce)").matches) return
+  if (document.documentElement.dataset.section !== "elsewhere" && !matchMedia("(max-width: 767px)").matches) return
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return
   const over = track.offsetWidth - marq.clientWidth
   if (over > 1) {
     marq.style.setProperty("--shift", `${-over}px`)

@@ -110,7 +110,7 @@ function applyScript() {
   document.querySelectorAll<HTMLElement>(".piece").forEach((piece) => {
     const vars = [...piece.querySelectorAll<HTMLElement>(".var")]
     if (vars.length === 0) return
-    const pick = vars.find((v) => v.dataset.script === pref) ?? vars[0]
+    const pick = vars.find((v) => v.dataset.script === pref) ?? vars.find((v) => v.dataset.script === "roman") ?? vars[0] // Roman is the default
     vars.forEach((v) => v.classList.toggle("on", v === pick))
     piece.querySelectorAll<HTMLButtonElement>(".switcher button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.script === pick.dataset.script)))
   })

@@ -111,18 +111,18 @@ function preview(f: Fields): HTMLElement {
       f.roman.trim() && { key: "roman", label: "Roman", lang: `${f.lang === "ur" ? "ur" : "hi"}-Latn`, text: f.roman },
       f.english.trim() && { key: "english", label: "English", lang: "en", text: f.english },
     ].filter(Boolean) as { key: string; label: string; lang: string; text: string }[]
+    const start = (vs.find((v) => v.key === "roman") ?? vs[0])?.key
     if (vs.length > 1) {
       const sw = el("div", "switcher"); sw.setAttribute("role", "group"); sw.setAttribute("aria-label", "script")
-      vs.forEach((v, i) => { const b = el("button", undefined, v.label) as HTMLButtonElement; b.type = "button"; b.dataset.script = v.key; b.setAttribute("aria-pressed", String(i === 0)); sw.append(b) })
+      vs.forEach((v) => { const b = el("button", undefined, v.label) as HTMLButtonElement; b.type = "button"; b.dataset.script = v.key; if (v.key === "devanagari") b.lang = "hi"; b.setAttribute("aria-pressed", String(v.key === start)); sw.append(b) })
       art.append(sw)
     }
     const stack = el("div", "stack")
-    vs.forEach((v, i) => {
-      const d = el("div", `var${i === 0 ? " on" : ""}`); d.dataset.script = v.key; d.lang = v.lang
-      let gap = false
-      for (const raw of v.text.replace(/\r/g, "").trim().split("\n")) {
-        if (!raw.trim()) { if (!gap) d.append(el("p", "gap")); gap = true; continue }
-        gap = false; d.append(el("p", undefined, raw.trim()))
+    vs.forEach((v) => {
+      const d = el("div", `var${v.key === start ? " on" : ""}`); d.dataset.script = v.key; d.lang = v.lang
+      for (const st of v.text.replace(/\r/g, "").trim().split(/\n\s*\n/)) {
+        const lines = st.split("\n").map((l) => l.trim()).filter(Boolean).join("\n")
+        if (lines) d.append(el("p", "st", lines))
       }
       stack.append(d)
     })

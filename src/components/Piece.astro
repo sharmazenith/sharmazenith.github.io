@@ -1,7 +1,7 @@
 ---
 import { render } from "astro:content"
 import { SECTION } from "../config"
-import { variantsOf, toLines, fmtDay, hrefOf, segOf, type Piece } from "../lib/content"
+import { variantsOf, fmtDay, hrefOf, segOf, type Piece } from "../lib/content"
 
 interface Props { entry: Piece; prev?: Piece; next?: Piece }
 const { entry, prev, next } = Astro.props
@@ -10,22 +10,24 @@ const prose = type === "note" || type === "essay"
 const variants = prose ? [] : variantsOf(entry)
 const Content = prose ? (await render(entry)).Content : null
 const href = hrefOf
+/* a stanza is a run of lines; a blank line ends it. Lines inside one stanza are tight (line-height only). */
+const stanzasOf = (text: string) => text.replace(/\r/g, "").trim().split(/\n\s*\n/).map((st) => st.split("\n").map((l) => l.trim()).filter(Boolean).join("\n")).filter(Boolean)
+const startKey = (variants.find((v) => v.key === "roman") ?? variants[0])?.key
 ---
 <article class="piece" data-type={segOf(type)} data-slug={entry.id}>
-  <a class="back" href={`/${SECTION.slug}/`}>← {SECTION.label}</a>
   {prose ? (<>
     {title && <h1 class="ptitle">{title}</h1>}
     <div class="body-text" lang={lang} dir={lang === "ur" ? "rtl" : undefined}>{Content && <Content />}</div>
   </>) : (<>
     {variants.length > 1 && (
       <div class="switcher" role="group" aria-label="script">
-        {variants.map((v, i) => <button type="button" data-script={v.key} aria-pressed={i === 0 ? "true" : "false"}>{v.label}</button>)}
+        {variants.map((v, i) => <button type="button" data-script={v.key} aria-pressed={v.key === startKey ? "true" : "false"} lang={v.key === "devanagari" ? "hi" : undefined}>{v.label}</button>)}
       </div>
     )}
     <div class="stack">
       {variants.map((v, i) => (
-        <div class={`var${i === 0 ? " on" : ""}`} data-script={v.key} lang={v.lang} dir={v.lang === "ur" ? "rtl" : undefined}>
-          {toLines(v.text).map((l) => <p class={l.gap ? "gap" : undefined}>{l.text}</p>)}
+        <div class={`var${v.key === startKey ? " on" : ""}`} data-script={v.key} lang={v.lang} dir={v.lang === "ur" ? "rtl" : undefined}>
+          {stanzasOf(v.text).map((st) => <p class="st">{st}</p>)}
         </div>
       ))}
     </div>
